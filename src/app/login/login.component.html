@@ -1,0 +1,161 @@
+<div class="pages-body login-page flex flex-row" style="height: 100vh;">
+    <!--Inicio del panel izquierdo-->
+    <div class="left-panel" style=" display: grid; width: 65%; min-height: 200px; background: #ffffff; border-radius: 16px; margin: 24px; place-items: center; grid-template-areas: 'stack';">
+        <div class="overlay-images-container" style="position: relative; width: 100%; height: 100%; grid-area: stack; z-index: 1;">
+            <img src="assets/images/Logo/PNG/logo-full-color-base-admin.png" alt="Foreground Image" style="position: absolute; top: 0; left: 0; width: 350px; height: auto; object-fit: cover; z-index: 2;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; max-height: 60%; border-radius: 24px; overflow: hidden; z-index: 3; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.45); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+                <video
+                    #loginVideo
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    preload="metadata"
+                    style="display: block; width: 100%; height: 100%; object-fit: contain;">
+                    <source src="assets/video/distrito_innova_480p.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fin del panel izquierdo -->
+    <div style="width: 0%; min-height: 40px; display: flex; flex-wrap: nowrap; "></div>
+
+    <div class="align-self-center mt-auto mb-auto">
+        <div class="pages-panel card flex flex-column px-6">
+            <h4></h4>
+
+            <form [formGroup]="signinForm" (ngSubmit)="signin()" autocomplete="off">
+                <div class="pages-detail mb-4 px-0" style="font-size: 25px; font-weight: bold;">
+                    <span style="
+                        background: linear-gradient(90deg, #6e7da5 0%, #5a37d7 100%);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                        color: transparent;
+                        display: flex; flex-grow: 1;
+                        font-size: 2.5rem;">
+                        INICIAR SESIÓN
+                    </span>
+                </div>
+
+                <div class="input-panel flex flex-column mb-4">
+                    <label for="username" class="p-float-label" style="align-items: flex-start; justify-content: left; display: flex;">Correo</label>
+                    <div class="p-inputgroup">
+                        <span class="p-float-label">
+                            <input type="text" id="username" [formControl]="$any(signinForm.get('username'))" pInputText>
+                        </span>
+                    </div>
+                    <div *ngIf="signinForm.controls['username'].hasError('required') && signinForm.controls['username'].touched">
+                        <p-message severity="error" text="Correo requerido"></p-message>
+                    </div>
+                    
+                    <label for="password" class="p-float-label" style="align-items: flex-start; justify-content: left; display: flex; margin-top: 1rem;">Contraseña</label>
+                    <span class="p-float-label">
+                        <input type="password" id="password" [formControl]="$any(signinForm.get('password'))" pInputText>
+                    </span>
+                    <div *ngIf="signinForm.controls['password'].hasError('required') && signinForm.controls['password'].touched">
+                        <p-message severity="error" text="Contraseña requerida"></p-message>
+                    </div>
+                    
+                    <div class="flex justify-content-end mt-2">
+                        <button type="button" class="p-button-text" style="color: #007ad9; text-decoration: none; font-size: 14px; padding: 0; border: none; background: none; cursor: pointer;" (click)="openForgotPasswordModal()">¿Olvidaste tu contraseña?</button>
+                    </div>
+                </div>
+
+                <div class="grid button-demo mb-3">
+                    <div class="col-12 md:col-12">
+                        <button pButton pRipple type="submit" class="p-button p-button-success mr-2 mb-2 w-full" [disabled]="signinForm.invalid" label="Iniciar sesión"></button>
+                    </div>
+                </div>
+                
+                <!-- Separador "O" -->
+                <div class="flex align-items-center mb-3">
+                    <div class="flex-1" style="height: 1px; background-color: #d1d5db;"></div>
+                    <span class="px-3" style="color: #6b7280; font-size: 14px; font-weight: 500;">o</span>
+                    <div class="flex-1" style="height: 1px; background-color: #d1d5db;"></div>
+                </div>
+                
+                <div class="grid button-demo mb-3">
+                    <div class="col-12 md:col-12">
+                        <button pButton pRipple type="button" (click)="signinIE()" class="p-button p-button-success mr-2 mb-2 p-button-icon-right w-full" icon="pi pi-arrow-right">
+                            <img src="assets/images/identidad_electronica.png" alt="Acceder" style="margin: 0 50px; width: 145px; object-fit: contain;">
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Botón de crear cuenta -->
+                <div class="flex justify-content-center mt-3">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+    </footer>
+</div>
+
+<!-- Toast para mensajes -->
+<p-toast position="top-right" appendTo="body" baseZIndex="2000" preventOpenDuplicates="true"></p-toast>
+
+<!-- Modal de Recuperar Contraseña -->
+<p-dialog 
+    header="Recuperar Contraseña" 
+    [(visible)]="showForgotPasswordModal" 
+    [modal]="true" 
+    [style]="{width: '450px'}" 
+    [draggable]="false" 
+    [resizable]="false"
+    [closable]="true"
+    (onHide)="closeForgotPasswordModal()">
+    
+    <div class="p-fluid">
+        <p style="margin-bottom: 1.5rem; color: #6b7280;">
+            Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+        </p>
+        
+        <form [formGroup]="forgotPasswordForm" (ngSubmit)="sendResetPasswordEmail()">
+            <div class="field">
+                <label for="email" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Correo Electrónico</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    pInputText 
+                    [formControl]="$any(forgotPasswordForm.get('email'))"
+                    placeholder="ejemplo@correo.com"
+                    class="w-full">
+                
+                <div *ngIf="forgotPasswordForm.controls['email'].hasError('required') && forgotPasswordForm.controls['email'].touched">
+                    <p-message severity="error" text="El correo electrónico es requerido"></p-message>
+                </div>
+                
+                <div *ngIf="forgotPasswordForm.controls['email'].hasError('email') && forgotPasswordForm.controls['email'].touched">
+                    <p-message severity="error" text="Ingresa un correo electrónico válido"></p-message>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <ng-template pTemplate="footer">
+        <button 
+            pButton 
+            pRipple 
+            type="button" 
+            label="Cancelar" 
+            class="p-button-text" 
+            (click)="closeForgotPasswordModal()">
+        </button>
+        <button 
+            pButton 
+            pRipple 
+            type="button" 
+            label="Enviar" 
+            class="p-button" 
+            [disabled]="forgotPasswordForm.invalid"
+            (click)="sendResetPasswordEmail()">
+        </button>
+    </ng-template>
+</p-dialog>
+
+
+

@@ -1,0 +1,71 @@
+<p-dialog
+    header="{{ 'Rol ('+ row?.nombre+')' }}"
+    styleClass="p-fluid"
+    [style]="{ width: 'auto', 'overflow':'auto' }"
+    [maximizable]="true"
+    [contentStyle] = "{'overflow': 'visible'}"
+    [modal]="true"
+    [(visible)]="visible"
+    (onHide)="close()">
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="formgrid grid">
+            <div class="col-12 md-12">
+
+                <div class="field">
+                    <p-pickList
+                        [source]="todosLosPermisos"
+                        [target]="permisosAsociados"
+                        sourceHeader="Lista de Permisos"
+                        targetHeader="Permisos asociados"
+                        dragdrop="true"
+                        filterBy="nombre"
+                        [showTargetControls]="false"
+                        sourceFilterPlaceholder="Buscar por nombre"
+                        targetFilterPlaceholder="Buscar por nombre"
+                        metaKeySelection="false"
+                        [sourceStyle]="{'height':'300px'}"
+                        [targetStyle]="{'height':'300px'}">
+
+                        <ng-template let-item pTemplate="item">
+                            <div class="permiso-item">
+                                <div class="permiso-list-detail" pTooltip="{{ item.descripcion }}" tooltipPosition="top">
+                                    {{ item.nombre }}
+                                </div>
+                            </div>
+                        </ng-template>
+
+                    </p-pickList>
+                </div>
+
+            </div>
+        </div>
+
+        <p-footer>
+            <div class="grid">
+                <div class="col-6 col-md-6">
+                    <p-button
+                    severity="primary"
+                    type="submit"
+                    [rounded]="true"
+                    label="Guardar"
+                    class="ui-button-success">
+                </p-button>
+                </div>
+                <div class="col-6 col-md-6">
+                    <p-button
+                    severity="secondary"
+                    type="button"
+                    [rounded]="true"
+                    label="Cancelar"
+                    class="p-button-warning"
+                    (click)="close()">
+                </p-button>
+                </div>
+            </div>
+        </p-footer>
+    </form>
+
+    <p style="color: #333"><strong>Importante</strong>: Los cambios se verán reflejados en el próximo inicio de sesión</p>
+
+</p-dialog>

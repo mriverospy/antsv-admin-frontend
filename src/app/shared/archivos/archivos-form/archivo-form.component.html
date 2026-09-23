@@ -1,0 +1,95 @@
+<p-dialog [(visible)]="visible"
+        [header]="isViewMode ? 'Ver Archivo' : (row ? 'Editar Archivo' : 'Agregar Archivo')"
+        [style]="{ minWidth: '800px', 'overflow': 'auto' }"
+        [modal]="true"
+        [draggable]="false"
+        [resizable]="false"
+        [closeOnEscape]="true"
+        [closable]="true"
+        [contentStyle]="{ 'overflow': 'visible' }"
+        (onShow)="onDialogShow()"
+        (onHide)="cerrarModal()"
+        appendTo="body">
+
+    <!-- Formulario dinámico - mostrar si no es modo vista, si no hay información del archivo, o si es imagen en modo vista -->
+    <app-gh-form-base-dynamic
+        *ngIf="!isViewMode || !archivoInfo || (isViewMode && archivoInfo && archivoInfo.esImagen)"
+        #formBase
+        [formConfig]="formConfig"
+        [isViewMode]="isViewMode"
+        (onResponse)="handleFormResponse($event)">
+    </app-gh-form-base-dynamic>
+
+    <!-- Botón de descarga para imágenes en modo vista -->
+    <div *ngIf="isViewMode && archivoInfo && archivoInfo.esImagen" class="p-d-flex p-jc-center mt-3">
+        <button pButton pRipple 
+                label="Descargar Imagen" 
+                icon="pi pi-download" 
+                class="p-button-success p-button-lg"
+                style="border-radius: 8px; padding: 0.75rem 2rem; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);"
+                (click)="descargarArchivo()">
+        </button>
+    </div>
+
+    <!-- Información del archivo para documentos (modo vista) -->
+    <div *ngIf="isViewMode && archivoInfo && archivoInfo.tieneArchivo && !archivoInfo.esImagen" class="mt-4">
+        <div class="p-card" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <div class="p-card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.5rem;">
+                <div class="p-d-flex p-ai-center p-jc-between">
+                    <div class="p-d-flex p-ai-center mb-2">
+                        <i class="pi pi-file" style="font-size: 1.5rem; margin-right: 0.75rem; display: inline-block; vertical-align: middle;"></i>
+                        <h5 style="margin: 0; font-weight: 600; display: inline-block; vertical-align: middle;">Información del Archivo</h5>
+                    </div>
+                    <p-tag [value]="archivoInfo.tipo" 
+                           [severity]="archivoInfo.tipo === 'IMAGEN' ? 'info' : (archivoInfo.tipo === 'DOCUMENTO' ? 'warning' : 'success')"
+                           style="font-weight: 600;">
+                    </p-tag>
+                </div>
+            </div>
+            <div class="p-card-content" style="padding: 2rem;">
+                <div class="p-grid">
+                    <div class="p-col-12 p-md-6 mb-3">
+                        <div class="p-d-flex p-ai-center mb-2">
+                            <i class="pi pi-file-edit" style="color: #667eea; margin-right: 0.5rem;"></i>
+                            <strong style="color: #374151;">Nombre del archivo:</strong>
+                        </div>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.95rem; word-break: break-all;">
+                            {{ archivoInfo.nombre }}
+                        </p>
+                    </div>
+                    <div class="p-col-12 p-md-6 mb-3">
+                        <div class="p-d-flex p-ai-center mb-2">
+                            <i class="pi pi-tag" style="color: #667eea; margin-right: 0.5rem;"></i>
+                            <strong style="color: #374151;">Tipo MIME:</strong>
+                        </div>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.95rem;">
+                            {{ archivoInfo.mimeType }}
+                        </p>
+                    </div>
+                    <div class="p-col-12 p-md-6 mb-3">
+                        <div class="p-d-flex p-ai-center mb-2">
+                            <i class="pi pi-calendar" style="color: #667eea; margin-right: 0.5rem;"></i>
+                            <strong style="color: #374151;">Fecha de creación:</strong>
+                        </div>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.95rem;">
+                            {{ archivoInfo.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="p-divider" style="margin: 1.5rem 0;"></div>
+                
+                <div class="p-d-flex p-jc-center mt-3">
+                    <button pButton pRipple 
+                            label="Descargar Archivo" 
+                            icon="pi pi-download" 
+                            class="p-button-success p-button-lg"
+                            style="border-radius: 8px; padding: 0.75rem 2rem; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);"
+                            (click)="descargarArchivo()">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</p-dialog>

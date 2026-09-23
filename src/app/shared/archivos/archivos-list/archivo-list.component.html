@@ -1,0 +1,281 @@
+<!-- Modal Archivos -->
+<p-dialog *ngIf="!embedded" header="Archivos" [(visible)]="visible" [modal]="true" [style]="{width: '1200px', minHeight: '80%'}"
+    [resizable]="false" [closable]="true" (onHide)="setVisible.emit(false)" (onShow)="onDialogShow()">
+
+    <p-toast key="archivoMsg"></p-toast>
+
+    <p-toolbar styleClass="mb-4" *ngIf="checkPermission('archivos:ver')">
+        <ng-template pTemplate="left">
+        </ng-template>
+        <ng-template pTemplate="right">
+            <button pButton pRipple label="Limpiar Filtros" icon="pi pi-filter-slash"
+                pTooltip="Limpiar todos los filtros" tooltipPosition="left" class="p-button-secondary mr-2 ml-2"
+                (click)="limpiarFiltros()"></button>
+            <button pButton pRipple label="Agregar" icon="pi pi-plus" pTooltip="Agregar nuevo archivo"
+                tooltipPosition="left" class="p-button-primary mr-2" (click)="agregar()"
+                *ngIf="checkPermission('archivos:crear')"></button>
+        </ng-template>
+    </p-toolbar>
+
+    <form [formGroup]="searchFormGroup">
+        <p-table [value]="listaArchivos" [lazy]="true" (onLazyLoad)="load($event)" [paginator]="true"
+            [rows]="pageSize" [totalRecords]="totalRecords" [loading]="loading" [showCurrentPageReport]="true"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} archivos"
+            [rowsPerPageOptions]="[10, 25, 50]" styleClass="p-datatable-sm" [scrollable]="true" scrollHeight="400px"
+            [resizableColumns]="true" columnResizeMode="expand">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pResizableColumn style="width:20%">
+                        <div pSortableColumn="nombreArchivo" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Nombre <p-sortIcon field="nombreArchivo"></p-sortIcon>
+                        </div>
+                        <input pInputText formControlName="nombreArchivo" [style]="{'width': '100%'}" placeholder="Buscar por nombre"
+                            (keydown)="onNombreKeydown($event)">
+                    </th>
+                    <th pResizableColumn style="width:12%">
+                        <div pSortableColumn="tipoArchivo" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Tipo <p-sortIcon field="tipoArchivo"></p-sortIcon>
+                        </div>
+                        <p-dropdown formControlName="tipoArchivo" [options]="tipoArchivoOptions" placeholder="Todos"
+                            [style]="{'width': '100%'}" (onChange)="onTipoArchivoChange()" [showClear]="true"
+                            appendTo="body">
+                        </p-dropdown>
+                    </th>
+                    <th pResizableColumn style="width:15%">
+                        <div pSortableColumn="nombreTipoDocumento" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Tipo Documento <p-sortIcon field="nombreTipoDocumento"></p-sortIcon>
+                        </div>
+                        <p-dropdown formControlName="idTipoDocumento" [options]="tipoDocumentoOptions" 
+                            placeholder="Todos" [style]="{'width': '100%'}" (onChange)="onTipoDocumentoChange()" 
+                            [showClear]="true" optionLabel="label" optionValue="value" appendTo="body">
+                        </p-dropdown>
+                    </th>
+                    <th pResizableColumn style="width:12%">
+                        <div pSortableColumn="fechaCreacion" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Fecha <p-sortIcon field="fechaCreacion"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pResizableColumn style="width:10%">
+                        <div pSortableColumn="estado" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Estado <p-sortIcon field="estado"></p-sortIcon>
+                        </div>
+                        <p-dropdown formControlName="estado" [options]="estadoOptions" placeholder="Todos"
+                            [style]="{'width': '100%'}" (onChange)="onEstadoChange()" [showClear]="true"
+                            appendTo="body">
+                        </p-dropdown>
+                    </th>
+                    <th pResizableColumn style="width:25%">
+                        <div class="p-d-flex p-jc-center p-ai-center mb-2">
+                            Acciones
+                        </div>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-archivo>
+                <tr [ngClass]="{ 'fila-inactiva': !archivo.estado }">
+                    <td>
+                        <div style="max-width: 200px; word-wrap: break-word;">
+                            {{ archivo.nombreArchivo }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge badge-info">{{ archivo.tipoArchivo }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-info" *ngIf="archivo.nombreTipoDocumento">{{ archivo.nombreTipoDocumento }}</span>
+                        <span *ngIf="!archivo.nombreTipoDocumento" class="text-muted">-</span>
+                    </td>
+                    <td>
+                        {{ archivo.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                    </td>
+                    <td class="tag-light">
+                        <p-tag [value]="archivo.estado ? 'ACTIVO' : 'INACTIVO'"
+                            [severity]="archivo.estado ? 'success' : 'danger'">
+                        </p-tag>
+                    </td>
+                    <td>
+                        <div class="flex justify-content-center">
+                            <button pButton pRipple icon="pi pi-download" pTooltip="Descargar"
+                                class="p-button-success mr-2" (click)="descargar(archivo)"
+                                *ngIf="checkPermission('archivos:ver')"></button>
+                            <button pButton type="button" class="p-button-success ml-2" icon="pi pi-check"
+                                *ngIf="archivo?.estado" pTooltip="Inactivar"
+                                (click)="updateStatus(archivo)"></button>
+                            <button pButton type="button" class="p-button-danger ml-2" icon="pi pi-circle-off"
+                                *ngIf="!archivo?.estado" pTooltip="Activar"
+                                (click)="updateStatus(archivo)"></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="7" class="empty-message-cell">
+                        <div class="empty-state-container">
+                            <img src="assets/images/vacio.png" alt="Sin datos" class="empty-state-image">
+                            <p class="empty-state-text">No se encontraron archivos</p>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+        <p-confirmDialog key="archivoDialog" [style]="{width: '450px'}"></p-confirmDialog>
+    </form>
+
+    <app-archivo-form *ngIf="showDialog" 
+        [(visible)]="showDialog" 
+        [row]="selectedArchivo"
+        [idRecurso]="idRecurso" 
+        [idEntity]="idEntity" 
+        [isViewMode]="isViewMode" 
+        (onResponse)="onFormResponse($event)" 
+        [fileType]="fileType" 
+        [tipoRecurso]="tipoRecurso">
+    </app-archivo-form>
+
+</p-dialog>
+
+<!-- Contenido embebido -->
+<div *ngIf="embedded" class="embedded-archivo-list">
+
+    <p-toast key="archivoMsg"></p-toast>
+
+    <p-toolbar styleClass="mb-4" *ngIf="checkPermission('archivos:ver')">
+        <ng-template pTemplate="left">
+        </ng-template>
+        <ng-template pTemplate="right">
+            <button pButton pRipple label="Limpiar Filtros" icon="pi pi-filter-slash"
+                pTooltip="Limpiar todos los filtros" tooltipPosition="left" class="p-button-secondary mr-2 ml-2"
+                (click)="limpiarFiltros()"></button>
+            <button pButton pRipple label="Agregar" icon="pi pi-plus" pTooltip="Agregar nuevo archivo"
+                tooltipPosition="left" class="p-button-primary mr-2" (click)="agregar()"
+                *ngIf="checkPermission('archivos:crear')"></button>
+        </ng-template>
+    </p-toolbar>
+
+    <form [formGroup]="searchFormGroup">
+        <p-table [value]="listaArchivos" [lazy]="true" (onLazyLoad)="load($event)" [paginator]="true"
+            [rows]="pageSize" [totalRecords]="totalRecords" [loading]="loading" [showCurrentPageReport]="true"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} archivos"
+            [rowsPerPageOptions]="[10, 25, 50]" styleClass="p-datatable-sm" [scrollable]="true" scrollHeight="400px"
+            [resizableColumns]="true" columnResizeMode="expand">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pResizableColumn style="width:20%">
+                        <div pSortableColumn="nombreArchivo" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Nombre <p-sortIcon field="nombreArchivo"></p-sortIcon>
+                        </div>
+                        <input pInputText formControlName="nombreArchivo" [style]="{'width': '100%'}" placeholder="Buscar por nombre"
+                            (keydown)="onNombreKeydown($event)">
+                    </th>
+                    <th pResizableColumn style="width:12%">
+                        <div pSortableColumn="tipoArchivo" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Tipo <p-sortIcon field="tipoArchivo"></p-sortIcon>
+                        </div>
+                        <p-dropdown formControlName="tipoArchivo" [options]="tipoArchivoOptions" placeholder="Todos"
+                            [style]="{'width': '100%'}" (onChange)="onTipoArchivoChange()" [showClear]="true"
+                            appendTo="body">
+                        </p-dropdown>
+                    </th>
+                    <th pResizableColumn style="width:15%">
+                        <div pSortableColumn="nombreTipoDocumento" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Tipo Documento <p-sortIcon field="nombreTipoDocumento"></p-sortIcon>
+                        </div>
+                        <p-dropdown formControlName="idTipoDocumento" [options]="tipoDocumentoOptions" 
+                            placeholder="Todos" [style]="{'width': '100%'}" (onChange)="onTipoDocumentoChange()" 
+                            [showClear]="true" optionLabel="label" optionValue="value" appendTo="body">
+                        </p-dropdown>
+                    </th>
+                    <th pResizableColumn style="width:12%">
+                        <div pSortableColumn="fechaCreacion" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Fecha <p-sortIcon field="fechaCreacion"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pResizableColumn style="width:10%">
+                        <div pSortableColumn="estado" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Estado <p-sortIcon field="estado"></p-sortIcon>
+                        </div>
+                        <p-dropdown formControlName="estado" [options]="estadoOptions" placeholder="Todos"
+                            [style]="{'width': '100%'}" (onChange)="onEstadoChange()" [showClear]="true"
+                            appendTo="body">
+                        </p-dropdown>
+                    </th>
+                    <th pResizableColumn style="width:25%">
+                        <div class="p-d-flex p-jc-center p-ai-center mb-2">
+                            Acciones
+                        </div>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-archivo>
+                <tr [ngClass]="{ 'fila-inactiva': !archivo.estado }">
+                    <td>
+                        <div style="max-width: 200px; word-wrap: break-word;">
+                            {{ archivo.nombreArchivo }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge badge-info">{{ archivo.tipoArchivo }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-info" *ngIf="archivo.nombreTipoDocumento">{{ archivo.nombreTipoDocumento }}</span>
+                        <span *ngIf="!archivo.nombreTipoDocumento" class="text-muted">-</span>
+                    </td>
+                    <td>
+                        {{ archivo.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                    </td>
+                    <td class="tag-light">
+                        <p-tag [value]="archivo.estado ? 'ACTIVO' : 'INACTIVO'"
+                            [severity]="archivo.estado ? 'success' : 'danger'">
+                        </p-tag>
+                    </td>
+                    <td>
+                        <div class="flex justify-content-center">
+                            <button pButton pRipple icon="pi pi-download" pTooltip="Descargar"
+                                class="p-button-success mr-2" (click)="descargar(archivo)"
+                                *ngIf="checkPermission('archivos:ver')"></button>
+                            <button pButton type="button" class="p-button-success ml-2" icon="pi pi-check"
+                                *ngIf="archivo?.estado" pTooltip="Inactivar"
+                                (click)="updateStatus(archivo)"></button>
+                            <button pButton type="button" class="p-button-danger ml-2" icon="pi pi-circle-off"
+                                *ngIf="!archivo?.estado" pTooltip="Activar"
+                                (click)="updateStatus(archivo)"></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="7" class="empty-message-cell">
+                        <div class="empty-state-container">
+                            <img src="assets/images/vacio.png" alt="Sin datos" class="empty-state-image">
+                            <p class="empty-state-text">No se encontraron archivos</p>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+        <p-confirmDialog key="archivoDialog" [style]="{width: '450px'}"></p-confirmDialog>
+    </form>
+
+    <app-archivo-form 
+        *ngIf="showDialog" 
+        [(visible)]="showDialog" 
+        [row]="selectedArchivo"
+        [idRecurso]="idRecurso" 
+        [idEntity]="idEntity" 
+        [isViewMode]="isViewMode" 
+        (onResponse)="onFormResponse($event)" 
+        [fileType]="fileType" 
+        [tipoRecurso]="tipoRecurso">
+    </app-archivo-form>
+
+</div>

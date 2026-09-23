@@ -1,0 +1,78 @@
+
+/* Estilos personalizados para mi-perfil-alertas */
+
+.field-radiobutton {
+    display: flex;
+    align-items: flex-start;
+    padding: 1.5rem;
+    border: 2px solid var(--surface-border);
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    background-color: var(--surface-card);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.field-radiobutton:hover {
+    border-color: var(--primary-color);
+    background-color: var(--surface-ground);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+}
+
+
+.field-radiobutton label {
+    cursor: pointer;
+    margin: 0;
+    flex: 1;
+}
+
+.field-radiobutton .font-medium {
+    display: block;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.field-radiobutton .text-color-secondary {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+/* Bloque informativo sobre canales de notificación */
+.notification-info-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background-color: var(--surface-ground);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.notification-info-block .info-icon {
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+}
+
+.notification-info-block .info-text {
+    margin: 0;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.notification-info-block .info-text p {
+    margin: 0;
+}
+
+.notification-info-block .info-text p.mt-2 {
+    margin-top: 0.75rem;
+}

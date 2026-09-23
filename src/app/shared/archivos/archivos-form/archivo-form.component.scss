@@ -1,0 +1,39 @@
+:host ::ng-deep {
+  // Estilos para p-selectButton - mejorar visibilidad del botón seleccionado
+  // Usar máxima especificidad para sobrescribir estilos del tema
+  .p-selectbutton .p-button {
+    border: 1px solid #ced4da !important;
+    transition: all 0.3s ease !important;
+    
+    // Estado normal
+    background: #ffffff !important;
+    color: #495057 !important;
+    
+    // Estado hover (no seleccionado)
+    &:not(.p-highlight):hover {
+      background: #f8f9fa !important;
+      border-color: #adb5bd !important;
+    }
+  }
+  
+  // Estado seleccionado (p-highlight) - MÁXIMA PRIORIDAD
+  .p-selectbutton .p-button.p-highlight {
+    background: var(--color-primario, #667eea) !important;
+    border-color: var(--color-primario, #667eea) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3) !important;
+    
+    &:hover {
+      background: var(--color-primario-alt, #764ba2) !important;
+      border-color: var(--color-primario-alt, #764ba2) !important;
+    }
+    
+    // Asegurar que los iconos también sean blancos
+    .p-button-icon-left,
+    .p-button-icon-right {
+      color: #ffffff !important;
+    }
+  }
+}
+

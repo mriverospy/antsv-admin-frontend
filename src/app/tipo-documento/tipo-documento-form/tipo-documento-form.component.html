@@ -1,0 +1,22 @@
+<p-dialog [(visible)]="visible"
+          [header]="isViewMode ? 'Ver Tipo de Documento' : (row && row.idTipoDocumento && row.idTipoDocumento > 0 ? 'Editar Tipo de Documento' : 'Agregar Tipo de Documento')"
+          [style]="{ width: '800px', 'overflow': 'auto' }"
+          [modal]="true"
+          [draggable]="false"
+          [resizable]="false"
+          [closeOnEscape]="true"
+          [closable]="true"
+          [contentStyle]="{ 'overflow': 'visible' }"
+          (onShow)="onDialogShow()"
+          (onHide)="cerrarModal()"
+          appendTo="body">
+
+  <app-gh-form-base-dynamic
+      #formBase
+      [formConfig]="formConfig"
+      [isViewMode]="isViewMode"
+      (onResponse)="handleFormResponse($event)">
+  </app-gh-form-base-dynamic>
+
+</p-dialog>
+

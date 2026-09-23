@@ -1,0 +1,372 @@
+<div *ngIf="isEmbedded">
+    <div class="p-grid p-fluid">
+        <div class="lg:w-9 p-4">
+            <form [formGroup]="form" (ngSubmit)="guardar(form.value)">
+                
+                <!-- Campo oculto para el ID del usuario -->
+                <input type="hidden" formControlName="idUsuario">
+                
+                <!-- Sección de Documento -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="tipoDocumento" class="block mb-0">Documento <span class="error">*</span></label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <div class="grid">
+                            <div class="col-12 sm:col-6 mb-2 sm:mb-0">
+                                <p-dropdown
+                                    id="tipoDocumento"
+                                    formControlName="tipoDocumento"
+                                    [options]="tiposDocumento"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="Tipo de documento"
+                                    class="w-full"
+                                    required>
+                                </p-dropdown>
+                                <small class="invalid" *ngIf="submitted && form.controls.tipoDocumento?.errors?.required">
+                                    El tipo de documento es requerido.
+                                </small>
+                            </div>
+                            <div class="col-12 sm:col-6">
+                                <input 
+                                    pInputText 
+                                    type="text" 
+                                    id="nroDocumento" 
+                                    formControlName="nroDocumento"
+                                    placeholder="Número de documento" 
+                                    class="w-full"
+                                    required>
+                                <small class="invalid" *ngIf="submitted && form.controls.nroDocumento?.errors?.required">
+                                    El número de documento es requerido.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Nombre Completo -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="nombre" class="block mb-0">Nombre completo <span class="error">*</span></label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <div class="grid">
+                            <div class="col-12 sm:col-6 mb-2 sm:mb-0">
+                                <input 
+                                    pInputText 
+                                    type="text" 
+                                    id="nombre" 
+                                    formControlName="nombre"
+                                    placeholder="Nombres" 
+                                    class="w-full"
+                                    (input)="$event.target.value = $event.target.value.toUpperCase()"
+                                    required>
+                                <small class="invalid" *ngIf="submitted && form.controls.nombre?.errors?.required">
+                                    El nombre es requerido.
+                                </small>
+                            </div>
+                            <div class="col-12 sm:col-6">
+                                <input 
+                                    pInputText 
+                                    type="text" 
+                                    id="apellido" 
+                                    formControlName="apellido"
+                                    placeholder="Apellidos" 
+                                    class="w-full"
+                                    (input)="$event.target.value = $event.target.value.toUpperCase()"
+                                    required>
+                                <small class="invalid" *ngIf="submitted && form.controls.apellido?.errors?.required">
+                                    El apellido es requerido.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Correo Electrónico -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="correo" class="block mb-0">Correo electrónico <span class="error">*</span></label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <input 
+                            pInputText 
+                            type="email" 
+                            id="correo" 
+                            formControlName="correo"
+                            placeholder="correo@ejemplo.com" 
+                            class="w-full"
+                            required>
+                        <small class="invalid" *ngIf="submitted && form.controls.correo?.errors?.required">
+                            El correo es requerido.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Sección de Nacionalidad -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="nacionalidad" class="block mb-0">Nacionalidad <span class="error">*</span></label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <p-dropdown
+                            id="nacionalidad"
+                            formControlName="nacionalidad"
+                            [options]="nacionalidades"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Seleccione su nacionalidad"
+                            class="w-full"
+                            required>
+                        </p-dropdown>
+                        <small class="invalid" *ngIf="submitted && form.controls.nacionalidad?.errors?.required">
+                            La nacionalidad es requerida.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Sección de Teléfono / Dirección -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="telefono" class="block mb-0">Teléfono <span class="error">*</span> / Dirección</label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <div class="grid">
+                            <div class="col-12 sm:col-6 mb-2 sm:mb-0">
+                                <p-inputMask 
+                                    mask="9999 999 999" 
+                                    id="telefono" 
+                                    formControlName="telefono"
+                                    placeholder="9999 999 999" 
+                                    class="w-full"
+                                    required>
+                                </p-inputMask>
+                                <small class="invalid" *ngIf="submitted && form.controls.telefono?.errors?.required">
+                                    El teléfono es requerido.
+                                </small>
+                            </div>
+                            <div class="col-12 sm:col-6">
+                                <input 
+                                    pInputText 
+                                    type="text" 
+                                    id="direccion" 
+                                    formControlName="direccion"
+                                    placeholder="Dirección" 
+                                    class="w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="grid mb-4" *ngIf="this.row">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label  class="block mb-0">Método de Registro</label>
+                    </div>
+
+                    <div class="col-12 md:col-9">
+                        <p-multiSelect
+                                appendTo="body"
+                                [options]="metodoRegistros"
+                                formControlName="metodoRegistros"
+                                defaultLabel="Seleccione un Metodo Registro"
+                                optionLabel="nombre"
+                                display="chip"
+                                emptyFilterMessage="Sin resultados"
+                                class="w-full">
+                        </p-multiSelect>
+                        <small class="invalid" *ngIf="submitted && form.controls.metodoRegistros?.errors?.required">
+                            Seleccione un Metodo Registro.
+                        </small>
+                    </div>
+
+                </div>
+                <hr>
+
+                  <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <div>
+                            <label for="organizacion" class="block mb-0">Organización <span class="error">*</span></label>
+                            <small class="block text-color-secondary">Seleccione la organización del usuario</small>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <p-dropdown
+                            id="organizacion"
+                            formControlName="organizacion"
+                            [options]="organizacionOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Seleccione una organización"
+                            class="w-full"
+                            required>
+                        </p-dropdown>
+                        <small class="invalid" *ngIf="submitted && form.controls.organizacion?.errors?.required">
+                            La organización es requerida.
+                        </small>
+                    </div>
+                </div>
+                <hr>
+
+                <!-- Sección de Cargo -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="cargo" class="block mb-0">Cargo</label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <input 
+                            pInputText 
+                            type="text" 
+                            id="cargo" 
+                            formControlName="cargo"
+                            placeholder="Cargo o función" 
+                            class="w-full">
+                    </div>
+                </div>
+
+                <!-- Sección de Credenciales -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label class="block mb-0">Credenciales <span class="error">*</span></label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <!-- Mensaje informativo para edición -->
+                        <div *ngIf="row" class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded text-blue-700 text-sm">
+                            <i class="pi pi-info-circle mr-2"></i>
+                            <strong>Nota:</strong> Las contraseñas son opcionales al editar. Solo llene estos campos si desea cambiar la contraseña.
+                        </div>
+                        
+                        <div class="grid">
+                            <div class="col-12 sm:col-4 mb-2 sm:mb-0">
+                                <span class="p-input-icon-left w-full">
+                                    <i class="pi pi-user"></i>
+                                    <input 
+                                        pInputText 
+                                        type="text" 
+                                        id="username" 
+                                        formControlName="username"
+                                        placeholder="Usuario" 
+                                        class="w-full"
+                                        [attr.disabled]="readonly ? true : null"
+                                        required>
+                                </span>
+                                <small class="invalid" *ngIf="submitted && form.controls.username?.errors?.required">
+                                    El nombre de usuario es requerido.
+                                </small>
+                                <small *ngIf="!row?.estado && row?.username != null" class="block text-orange-600">
+                                    El usuario está inactivo.
+                                </small>
+                            </div>
+                            <div class="col-12 sm:col-4 mb-2 sm:mb-0">
+                                <input 
+                                    pPassword 
+                                    type="password" 
+                                    autocomplete="off" 
+                                    id="password" 
+                                    formControlName="password"
+                                    placeholder="Contraseña" 
+                                    class="w-full"
+                                    promptLabel="Ingrese una contraseña" 
+                                    weakLabel="Contraseña débil" 
+                                    mediumLabel="Contraseña media" 
+                                    strongLabel="Contraseña robusta"
+                                    (input)="onPasswordChange()"
+                                    [required]="isPasswordRequired()">
+                                <small class="invalid" *ngIf="submitted && form.controls.password?.errors?.required">
+                                    La contraseña es requerida.
+                                </small>
+                            </div>
+                            <div class="col-12 sm:col-4">
+                                <input 
+                                    pPassword 
+                                    type="password" 
+                                    autocomplete="off" 
+                                    id="password2" 
+                                    formControlName="password2"
+                                    placeholder="Repetir contraseña" 
+                                    class="w-full"
+                                    promptLabel="Repita la contraseña" 
+                                    weakLabel="Contraseña débil" 
+                                    mediumLabel="Contraseña media" 
+                                    strongLabel="Contraseña robusta"
+                                    (input)="onPasswordChange()"
+                                    [required]="isPasswordRequired()">
+                                <small class="invalid" *ngIf="submitted && form.controls.password2?.errors?.required">
+                                    Debe repetir la contraseña.
+                                </small>
+                                <small class="invalid" *ngIf="form.controls.password2?.errors?.passwordMismatch">
+                                    Las contraseñas no coinciden.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Fecha de Expiración -->
+                <div *ngIf="checkPermission('usuarios:editarClaveUsuarioAdmin')" class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="fechaExpiracion" class="block mb-0">Fecha de Expiración <span class="error">*</span></label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <p-calendar 
+                            formControlName="fechaExpiracion" 
+                            [showIcon]="true" 
+                            dateFormat="dd-mm-yy" 
+                            dataType="string" 
+                            name="fechaExpiracion" 
+                            [monthNavigator]="true" 
+                            [yearNavigator]="true" 
+                            yearRange="{{yearStart}}:{{yearFinal}}" 
+                            appendTo="body"
+                            class="w-full">
+                        </p-calendar>
+                        <small class="invalid" *ngIf="submitted && form.controls.fechaExpiracion?.errors?.required">
+                            La fecha de expiración es requerida.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Sección de Roles -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="roles" class="block mb-0">Roles <span class="error">*</span></label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <p-multiSelect 
+                            appendTo="body" 
+                            [options]="roles" 
+                            formControlName="roles" 
+                            defaultLabel="Seleccione un rol" 
+                            optionLabel="nombre" 
+                            display="chip" 
+                            emptyFilterMessage="Sin resultados"
+                            class="w-full">
+                        </p-multiSelect>
+                        <small class="invalid" *ngIf="submitted && form.controls.roles?.errors?.required">
+                            Seleccione un rol.
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Sección de Botones de acción -->
+                <div class="flex justify-content-center mt-5">
+                    <p-button 
+                        label="Guardar" 
+                        severity="primary" 
+                        styleClass="p-button-rounded"
+                        icon="pi pi-check"
+                        type="submit">
+                    </p-button>
+                    <p-button 
+                        label="Cancelar" 
+                        severity="secondary"
+                        styleClass="p-button-rounded ml-2"
+                        icon="pi pi-times"
+                        (click)="close()">
+                    </p-button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>

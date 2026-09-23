@@ -1,0 +1,39 @@
+<p-dialog
+    appendTo="body"
+    [draggable]="true"
+    header="Cambiar contraseña"
+    styleClass="p-fluid"
+    [style]="{ width: '300px', 'overflow':'auto' }"
+    [maximizable]="true"
+    [modal]="true"
+    [(visible)]="visible"
+    (onHide)="close()">
+    
+    <form [formGroup]="form" (ngSubmit)="guardar(form.value)">
+        <div class="formgrid grid">
+            <div class="field col-12 md:col-12">
+                <label for="password">Contraseña nueva <span class="error">*</span></label>
+                <input pPassword type="password" autocomplete="off" id="password" formControlName="password" placeholder="contraseña" promptLabel="Ingrese una contraseña" weakLabel="Contraseña débil" mediumLabel="Contraseña media" strongLabel="Contraseña robusta" >
+                <small class="invalid" *ngIf="submitted && form.get('password')?.errors?.['required']">La contraseña de usuario es requerida.</small>
+            </div>
+
+            <div class="field col-12 md:col-12">
+                <label for="password2">Repita contraseña <span class="error">*</span></label>
+                <input pPassword type="password" autocomplete="off" id="password2" formControlName="password2" placeholder="repetir contraseña" promptLabel="Repita la contraseña" weakLabel="Contraseña débil" mediumLabel="Contraseña media" strongLabel="Contraseña robusta" >
+                <small class="invalid" *ngIf="submitted && form.get('password2')?.errors?.['required']">La contraseña de usuario es requerida.</small>
+            </div> 
+        </div>
+        <p-footer>
+            <div class="grid mt-5 p-2 flex justify-content-center flex-wrap card-container">
+                <div class="col-6 col-md-12">
+                    <button pButton pRipple label="Cambiar" icon="pi pi-check" class="p-button-text" (click)="guardar(form.value)"></button>
+                </div>
+                <div class="col-6 col-md-12">
+                    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="close()"></button>
+                </div>
+            </div>
+        </p-footer>
+    
+    </form>
+
+</p-dialog>

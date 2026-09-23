@@ -1,0 +1,11 @@
+<p-tabView (onChange)="onTabChange($event)">
+  <p-tabPanel header="Información General">
+    <app-mi-perfil-info></app-mi-perfil-info>
+  </p-tabPanel>
+  <p-tabPanel header="Seguridad y Accesos">
+    <app-mi-perfil-pass></app-mi-perfil-pass>
+  </p-tabPanel>
+  <p-tabPanel header="Alertas y Notificaciones">
+    <app-mi-perfil-alertas></app-mi-perfil-alertas>
+  </p-tabPanel>
+</p-tabView>

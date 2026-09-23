@@ -1,0 +1,86 @@
+<p-dialog
+    header="{{ row ? 'Editar':'Agregar' }} Permisos"
+    styleClass="p-fluid"
+    [style]="{ width: '600px', 'overflow':'auto' }"
+    [maximizable]="true"
+    [contentStyle] = "{'overflow': 'visible'}"
+    [modal]="true"
+    [(visible)]="visible"
+    (onHide)="close()">
+
+    <div class="p-grid p-fluid">
+        <div class="lg:w-9 p-4">
+            <p class="info-requerid w-full mb-4">(*) Son campos obligatorios.</p>
+            
+            <form [formGroup]="form" (ngSubmit)="guardar(form.value)">
+                
+                <!-- Sección de Nombre -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="nombre" class="block mb-0">Nombre <span class="error">*</span></label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <input 
+                            type="text" 
+                            pInputText 
+                            id="nombre" 
+                            formControlName="nombre" 
+                            placeholder="Ingrese el nombre del permiso" 
+                            autocomplete="off"
+                            class="w-full"
+                            required>
+                        <small class="invalid" *ngIf="submitted && form.controls.nombre?.errors?.required">
+                            El nombre es requerido.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Sección de Descripción -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="descripcion" class="block mb-0">Descripción <span class="error">*</span></label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <input 
+                            type="text" 
+                            pInputText 
+                            id="descripcion" 
+                            formControlName="descripcion" 
+                            placeholder="Ingrese la descripción del permiso" 
+                            autocomplete="off"
+                            class="w-full"
+                            required>
+                        <small class="invalid" *ngIf="submitted && form.controls.descripcion?.errors?.required">
+                            La descripción es requerida.
+                        </small>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <p-footer>
+        <div class="grid">
+            <div class="col-6">
+                <p-button 
+                    severity="primary"
+                    [rounded]="true"
+                    label="Guardar" 
+                    styleClass="w-full"
+                    (click)="guardar(form.value)">
+                </p-button>
+            </div>
+            <div class="col-6">
+                <p-button 
+                    severity="secondary"
+                    [rounded]="true"
+                    label="Cancelar" 
+                    styleClass="w-full"
+                    (click)="close()">
+                </p-button>
+            </div>
+        </div>
+    </p-footer>
+
+</p-dialog>

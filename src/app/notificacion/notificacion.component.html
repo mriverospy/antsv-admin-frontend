@@ -1,0 +1,223 @@
+<div class="surface-ground card p-4">
+  <div class="text-3xl font-medium text-900 mb-3">Notificaciones</div>
+  <div class="text-500 mb-5">Gestiona todas tus notificaciones del sistema</div>
+
+  <!-- Filtros -->
+  <div class="grid mb-4">
+    <div class="col-12 md:col-6">
+      <label for="filtroEstado" class="block text-900 font-medium mb-2"
+        >Filtrar por estado</label
+      >
+      <p-dropdown
+        id="filtroEstado"
+        [options]="estadosFiltro"
+        [(ngModel)]="filtroLeido"
+        placeholder="Seleccionar estado"
+        styleClass="w-full"
+      ></p-dropdown>
+    </div>
+    <div class="col-12 md:col-6 flex align-items-end">
+      <button
+        pButton
+        type="button"
+        label="Marcar todas como leídas"
+        icon="pi pi-check-circle"
+        class="p-button-outlined w-full"
+        (click)="marcarTodasComoLeidas()"
+      ></button>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <!-- <div class="grid mb-4">
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-border border-1 border-round p-3 text-center">
+                    <span class="block text-900 font-medium mb-2">Total</span>
+                    <span class="text-blue-600 font-bold text-xl">{{notificaciones.length}}</span>
+                </div>
+            </div>
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-border border-1 border-round p-3 text-center">
+                    <span class="block text-900 font-medium mb-2">No leídas</span>
+                    <span class="text-orange-600 font-bold text-xl">{{notificacionesNoLeidas}}</span>
+                </div>
+            </div>
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-border border-1 border-round p-3 text-center">
+                    <span class="block text-900 font-medium mb-2">Leídas</span>
+                    <span class="text-green-600 font-bold text-xl">{{notificacionesLeidas}}</span>
+                </div>
+            </div>
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-border border-1 border-round p-3 text-center">
+                    <span class="block text-900 font-medium mb-2">Filtradas</span>
+                    <span class="text-purple-600 font-bold text-xl">{{notificacionesFiltradas.length}}</span>
+                </div>
+            </div>
+        </div> -->
+
+  <!-- Lista de notificaciones -->
+  <div class="grid">
+    <div
+      class="col-12"
+      *ngFor="let notificacion of notificacionesFiltradas; trackBy: trackByFn"
+    >
+      <div
+        class="notification-item surface-border border-1 border-round-2xl p-4 mb-3 transition-all transition-duration-200"
+        [ngClass]="{
+          'notification-unread': !notificacion.leido,
+          'notification-read': notificacion.leido
+        }"
+      >
+        <div class="flex align-items-start">
+          <!-- Icono principal mejorado -->
+          <div class="notification-icon-container flex-shrink-0 mr-3">
+            <div
+              class="icon-wrapper"
+              [ngClass]="{
+                'icon-unread': !notificacion.leido,
+                'icon-read': notificacion.leido
+              }"
+            >
+              <i
+                [class]="notificacion.icono || 'pi pi-bell'"
+                class="notification-icon"
+                [ngClass]="{
+                  'text-blue-500': notificacion.tipo === 'inscripcion' && !notificacion.leido,
+                  'text-orange-500': notificacion.tipo === 'evento' && !notificacion.leido,
+                  'text-green-500': notificacion.tipo === 'organizacion' && !notificacion.leido,
+                  'text-purple-500': notificacion.tipo === 'noticia' && !notificacion.leido,
+                  'text-400': notificacion.leido
+                }"
+              ></i>
+            </div>
+          </div>
+
+          <!-- Contenido principal -->
+          <div class="flex-1">
+            <!-- Header con título, fecha y badges -->
+            <div
+              class="flex justify-content-between align-items-start mb-2 flex-wrap"
+            >
+              <h5
+                class="m-0 text-900 mr-2"
+                [ngClass]="{
+                  'font-bold': !notificacion.leido,
+                  'text-gray-400': notificacion.leido
+                }"
+              >
+                {{ notificacion.titulo }}
+              </h5>
+              <div class="flex align-items-center gap-2 flex-wrap">
+                <!-- Fecha -->
+                <small class="text-500">
+                  {{ notificacion.fechaCreacion | date : "dd/MM/yyyy HH:mm" }}
+                </small>
+              </div>
+            </div>
+
+            <!-- Mensaje -->
+            <p
+              class="text-700 mb-3 line-height-3"
+              [ngClass]="{ 'text-500': notificacion.leido }"
+            >
+              {{ notificacion.mensaje }}
+            </p>
+
+            <!-- Footer con estado y acciones -->
+            <div class="flex justify-content-between align-items-center flex-wrap gap-3">
+              <!-- Estado mejorado -->
+              <div class="flex align-items-center gap-3 flex-wrap">
+                <!-- Badge de estado mejorado -->
+                <div class="flex align-items-center gap-2">
+                  <div
+                    class="status-indicator"
+                    [ngClass]="{
+                      'status-read': notificacion.leido,
+                      'status-unread': !notificacion.leido
+                    }"
+                  >
+                    <div class="status-dot"></div>
+                    <span class="status-text">
+                      <i
+                        class="pi status-icon"
+                        [ngClass]="
+                          notificacion.leido ? 'pi-check-circle' : 'pi-circle'
+                        "
+                      ></i>
+                      {{ notificacion.leido ? "Leída" : "No leída" }}
+                    </span>
+                  </div>
+                </div>
+                <!-- Fecha de lectura mejorada -->
+                <div
+                  class="read-date-container"
+                  *ngIf="notificacion.leido && notificacion.fechaLectura"
+                >
+                  <i class="pi pi-clock text-400 mr-1"></i>
+                  <small class="text-500 font-medium">
+                    Leída el
+                    <span class="text-600">{{
+                      notificacion.fechaLectura | date : "dd/MM/yyyy HH:mm"
+                    }}</span>
+                  </small>
+                </div>
+              </div>
+
+              <!-- Acciones -->
+              <div class="flex gap-2">
+                <button
+                  pButton
+                  pRipple
+                  type="button"
+                  icon="pi pi-check"
+                  class="p-button-rounded p-button-success p-button-sm"
+                  *ngIf="!notificacion.leido"
+                  (click)="marcarComoLeida(notificacion.idNotificacion)"
+                  pTooltip="Marcar como leída"
+                ></button>
+
+                <button
+                  pButton
+                  pRipple
+                  type="button"
+                  icon="pi pi-times"
+                  class="p-button-rounded p-button-secondary p-button-sm"
+                  *ngIf="notificacion.leido"
+                  (click)="marcarComoNoLeida(notificacion.idNotificacion)"
+                  pTooltip="Marcar como no leída"
+                ></button>
+
+                <button
+                  pButton
+                  pRipple
+                  type="button"
+                  icon="pi pi-external-link"
+                  class="p-button-rounded p-button-info p-button-sm"
+                  *ngIf="notificacion.enlace"
+                  pTooltip="Ver detalles"
+                ></button>
+
+                <!-- <button pButton pRipple type="button" 
+                                            icon="pi pi-trash" 
+                                            class="p-button-rounded p-button-danger p-button-sm"
+                                            (click)="eliminarNotificacion(notificacion.idNotificacion)"
+                                            pTooltip="Eliminar notificación"></button> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay notificaciones -->
+    <div
+      class="col-12 text-center py-6"
+      *ngIf="notificacionesFiltradas.length === 0"
+    >
+      <i class="pi pi-bell text-6xl text-400 mb-3"></i>
+      <p class="text-500 text-xl mb-2">No hay notificaciones para mostrar</p>
+      <p class="text-500">Ajusta los filtros para ver más resultados</p>
+    </div>
+  </div>
+</div>

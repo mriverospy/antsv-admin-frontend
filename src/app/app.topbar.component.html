@@ -1,0 +1,120 @@
+<div class="cabecera-general">
+  <div class="background-gradient-primary background-gradient-primary-light"></div>
+  <div class="background-gradient-primary"></div>
+  <div class="layout-topbar">
+    <div class="layout-topbar-left">
+      <a class="layout-topbar-logo" routerLink="/">
+        <img src="assets/images/Logo/PNG/logo-full-color-base-admin.png" alt="HTV logo" class="logo-image" />
+      </a>
+
+      <a class="layout-menu-button shadow-6" (click)="appMain.onMenuButtonClick($event)" pRipple>
+        <i class="pi pi-chevron-right"></i>
+      </a>
+    </div>
+
+    <div class="layout-topbar-right p-4" [ngClass]="{ 'layout-topbar-mobile-active': appMain.mobileTopbarActive }">
+      <div class="layout-topbar-actions-left">
+        <!-- <p-megaMenu [model]="model" styleClass="layout-megamenu"></p-megaMenu> -->
+      </div>
+      <div class="layout-topbar-actions-right">
+        <ul class="layout-topbar-items">
+
+          <li class="layout-topbar-item notifications">
+            <a class="layout-topbar-action round" (click)="appMain.onTopbarItemClick($event, 'notifications')" pRipple>
+              <span class="p-overlay-badge">
+                <i class="pi pi-bell fw-bold fs-large"></i>
+                <span *ngIf="notificacionesPendientes > 0" class="p-badge p-badge-warning">{{ notificacionesPendientes
+                  }}</span>
+              </span>
+            </a>
+            <ul class="layout-topbar-action-panel shadow-6 card" [@topbarActionPanelAnimation]="'visible'"
+              *ngIf="appMain.activeTopbarItem === 'notifications'">
+              <!-- <li class="mb-3" *ngIf="notificaciones.length > 0">
+                            <span class="px-3 fs-small">Tienes <b>{{notificaciones.length}}</b> notificaciones pendientes</span>
+                        </li>
+                        <li class="mb-3" *ngIf="notificaciones.length === 0">
+                            <span class="px-3 fs-small">No tienes notificaciones pendientes</span>
+                        </li> -->
+              <li class="layout-topbar-action-item" (click)="marcarComoLeida(notificacion.idNotificacion)"
+                *ngFor="let notificacion of notificaciones">
+                <div class="flex flex-row align-items-center">
+                  <i [class]="notificacion.icono || 'pi pi-bell'" style="font-size: 1.5rem; margin-right: 0.5rem"
+                    [ngClass]="{
+                      'text-blue-500': notificacion.tipo === 'inscripcion',
+                      'text-orange-500': notificacion.tipo === 'evento',
+                      'text-green-500': notificacion.tipo === 'organizacion',
+                      'text-purple-500': notificacion.tipo === 'noticia'
+                    }"></i>
+                  <div class="flex flex-column" [ngClass]="{ 'ml-3': !app.isRTL, 'mr-3': app.isRTL }"
+                    style="flex-grow: 1">
+                    <div class="flex align-items-center justify-content-between mb-1">
+                      <span class="fs-small font-bold" [ngClass]="{
+                          'text-600': notificacion.leido,
+                          'text-900': !notificacion.leido
+                        }">
+                        {{ notificacion.titulo }}
+                      </span>
+                    </div>
+                    <span class="fs-small text-500">{{
+                      notificacion.fechaCreacion
+                      | date
+                      : "dd/MM/yyyy
+                      HH:mm"
+                      }}</span>
+                    <span class="fs-small text-700 mt-1" [ngClass]="{ 'text-500': notificacion.leido }">
+                      {{ notificacion.mensaje }}
+                    </span>
+                  </div>
+                  <div class="flex justify-content-end mt-2" *ngIf="!notificacion.leido">
+                    <button pButton pRipple type="button" icon="pi pi-check"
+                      class="p-button-rounded p-button-text p-button-success p-button-sm"
+                      (click)="marcarComoLeida(notificacion.idNotificacion)" pTooltip="Marcar como leída"></button>
+                  </div>
+                </div>
+              </li>
+              <li class="layout-topbar-action-item text-center">
+                <button pButton type="button" label="Ver Notificaciones" class="p-button-text p-button-sm"
+                  (click)="verTodasLasNotificaciones()"></button>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Perfil de usuario y menú desplegable -->
+          <li class="layout-topbar-item profile">
+            <a class="layaout-topbar-action pointer" (click)="appMain.onTopbarItemClick($event, 'profile')"
+              style="border-radius: 50%" pRipple>
+              <img *ngIf="fotoPerfil; else sinFoto" [src]="fotoPerfil" alt="avatar"
+                class="w-3rem h-3rem border-circle object-fit-cover fotoPerfil" />
+
+              <ng-template #sinFoto>
+                <img src="../assets/images/avatar.png" alt="avatar por defecto"
+                  class="w-3rem h-3rem border-circle object-fit-contain fotoPerfil bg-img-70" />
+              </ng-template>
+              <i class="pi pi-chevron-down fw-bold icono-caret"></i>
+            </a>
+            <ul class="layout-topbar-action-panel shadow-6 px-2 card" style="min-width: 13rem; width: 15rem"
+              [@topbarActionPanelAnimation]="'visible'" *ngIf="appMain.activeTopbarItem === 'profile'">
+
+              <li class="layout-topbar-action-item br-8">
+                <button type="button"
+                  class="flex flex-row align-items-center p-ripple cursor-pointer hover:bg-emphasis duration-150 transition-all br-8 w-full text-left border-none bg-transparent"
+                  (click)="goToAjustes()">
+                  <i class="pi pi-cog mr-2"></i>
+                  <span>Ajustes</span>
+                </button>
+              </li>
+              <li class="layout-topbar-action-item br-8">
+                <button type="button"
+                  class="flex flex-row align-items-center p-ripple cursor-pointer hover:bg-emphasis duration-150 transition-all br-8 w-full text-left border-none bg-transparent"
+                  (click)="logout($event); $event.stopPropagation()">
+                  <i class="pi pi-power-off mr-2"></i>
+                  <span>Cerrar sesión</span>
+                </button>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

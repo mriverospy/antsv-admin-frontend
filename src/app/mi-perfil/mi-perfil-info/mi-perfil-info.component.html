@@ -1,0 +1,203 @@
+
+     <div class="p-grid p-fluid">
+        <div class="lg:w-9 mt-4">
+            <form (ngSubmit)="onSubmit()">
+                <!-- Sección de Nombre Completo -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="nombre-completo" class="block mb-0">Nombre completo</label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <div class="grid">
+                            <div class="col-12 sm:col-6 mb-2 sm:mb-0">
+                                <input pInputText type="text" id="nombre-completo" [(ngModel)]="perfil.nombre" name="nombre_completo" value="Edgar Missael" class="w-full">
+                            </div>
+                            <div class="col-12 sm:col-6">
+                                <input pInputText type="text" id="apellido-completo" [(ngModel)]="perfil.apellido" name="apellido_completo" value="Cabral Báez" class="w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Correo Electrónico -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="correo-electronico" class="block mb-0">Correo electrónico</label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <input pInputText type="email" id="correo-electronico" [(ngModel)]="perfil.correo" name="correo_electronico" value="ecabral@gmail.com" class="w-full">
+                    </div>
+                </div>
+
+                <!-- Sección de Foto de Perfil -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3">
+                        <label class="block mb-0">Foto de perfil</label>
+                        <p class="text-sm mt-0 text-color-secondary">Esto es visible para todos</p>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <div class="flex align-items-center">
+                            <!-- Contenedor de la imagen de perfil -->
+                            <div class="relative overflow-hidden border-round border-2 border-300" style="width: 120px; height: 120px; min-width: 120px;">
+                                <img [src]="profileImageUrl" alt="Foto de perfil" class="w-full h-full">
+                            </div>
+                            <!-- Área de "subir o arrastrar" la foto -->
+                            <div class="ml-4 flex-1">
+                                <div class="flex flex-column justify-content-center align-items-center p-4 profile-image-container"
+                                     *ngIf="!selectedFileName"
+                                     (click)="triggerFileInput()"
+                                     (dragover)="onDragOver($event)"
+                                     (dragleave)="onDragLeave($event)"
+                                     (drop)="onDrop($event)"
+                                     (onSelect)="onImageUpload($event)"
+                                     [class.drag-over]="isDragOver">
+                                    <i class="pi pi-cloud-upload text-4xl upload-icon mb-2"></i>
+                                    <p class="text-sm text-center text-color-secondary mb-0">
+                                        <span class="text-primary font-medium">Clic para subir</span> o arrastrar y soltar tu foto aquí
+                                    </p>
+                                    <p class="text-xs mt-1 text-color-secondary">PNG, JPG o GIF (máx. {{imageSizeLabel}})</p>
+                                </div>
+                                
+                                <!-- Estado con archivo seleccionado -->
+                                <div *ngIf="selectedFileName" class="file-upload-status">
+                                    <div class="file-info flex align-items-center p-3 border-1 border-300 border-round">
+                                        <i class="pi pi-file mr-3 text-2xl text-600"></i>
+                                        <div class="flex-1">
+                                            <div class="font-medium text-900 mb-1">{{ selectedFileName }}</div>
+                                            <div class="text-sm text-600 mb-2">{{ selectedFileSize }}</div>
+                                            
+                                            <p-progressBar 
+                                                *ngIf="uploadProgress > 0 && uploadProgress < 100"
+                                                [value]="uploadProgress" 
+                                                [showValue]="true"
+                                                styleClass="mb-2"
+                                                [style]="{'height': '8px'}">
+                                            </p-progressBar>
+                                            
+                                            <div *ngIf="uploadProgress === 100" class="flex align-items-center text-green-600 text-sm">
+                                                <i class="pi pi-check-circle mr-1"></i>
+                                                <span>Archivo cargado exitosamente</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <button 
+                                            pButton 
+                                            type="button" 
+                                            icon="pi pi-times"
+                                            class="p-button-rounded p-button-text p-button-danger ml-2"
+                                            (click)="removeFile()"
+                                            pTooltip="Quitar imagen"
+                                            tooltipPosition="top">
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <input #fileInput type="file" [attr.accept]="imageAccept" (change)="onFileSelect($event)" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Número de Teléfono y Dirección -->
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="telefono-direccion" class="block mb-0">Teléfono / Dirección</label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <div class="grid">
+                            <div class="col-12 sm:col-6 mb-2 sm:mb-0">
+                                <input 
+                                    pInputText 
+                                    pKeyFilter="num"
+                                    type="tel" 
+                                    id="telefono" 
+                                    name="telefono" 
+                                    [(ngModel)]="perfil.telefono"
+                                    placeholder="Número de teléfono"
+                                    class="w-full">
+                            </div>
+                            <div class="col-12 sm:col-6">
+                                <input 
+                                    pInputText 
+                                    type="text" 
+                                    id="direccion" 
+                                    name="direccion" 
+                                    [(ngModel)]="perfil.direccion"
+                                    placeholder="Dirección"
+                                    class="w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3 flex align-items-center">
+                        <label for="organizacipn-roles" class="block mb-0">Organización / Roles</label>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <div class="grid">
+                            <div class="col-12 sm:col-6 mb-2 sm:mb-0">
+                                <div class="detail-item" *ngIf="nombreOrganizacion">
+                                    <i class="pi pi-building detail-icon"></i>
+                                    <div class="detail-content">
+                                        <span class="detail-label">Organización</span>
+                                        <span class="detail-value">{{ nombreOrganizacion }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 sm:col-6">
+                                <div class="detail-item" *ngIf="roles.length > 0">
+                                    <i class="pi pi-users detail-icon"></i>
+                                    <div class="detail-content">
+                                        <span class="detail-label">Roles</span>
+                                        <div class="roles-container">
+                                            <span class="role-badge" *ngFor="let rol of roles">{{ rol }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Sección de Biografía 
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3">
+                        <label for="biografia" class="block mb-0">Biografía</label>
+                        <p class="text-sm mt-0 text-color-secondary">Una presentación sobre vos</p>
+                    </div>
+                    <div class="col-12 md:col-9">
+                        <textarea 
+                            pInputTextarea 
+                            id="biografia" 
+                            [(ngModel)]="perfil.biografia"
+                            name="biografia" 
+                            rows="4" 
+                            class="w-full" 
+                            [autoResize]="false">Lorem Ipsum es un texto de marcador de posición comúnmente utilizado en las industrias gráficas y editoriales para previsualizar diseños y maquetas visuales.</textarea>
+                    </div>
+                </div>
+                -->
+                
+                <!-- Sección de Botones de acción -->
+                <div class="flex justify-content-center mt-5">
+                     <p-button 
+                        label="Guardar cambios" 
+                        severity="primary" 
+                        styleClass="p-button-rounded"
+                        (onClick)="onSubmit()">
+                    </p-button>
+                    <p-button
+                        label="Cancelar" 
+                        severity="secondary"
+                        [rounded]="true"
+                        styleClass="ml-2"
+                        (onClick)="onCancel()">
+                    </p-button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
+

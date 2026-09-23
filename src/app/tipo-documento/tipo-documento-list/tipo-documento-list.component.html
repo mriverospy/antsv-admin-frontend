@@ -1,0 +1,153 @@
+<div class="card">
+    <p-toolbar styleClass="mb-4" *ngIf="checkPermission('tipoDocumento:ver')">
+        <ng-template pTemplate="left">
+            <h5 class="m-2">Tipos de Documento</h5>
+        </ng-template>
+        <ng-template pTemplate="right">
+            <button pButton pRipple 
+                label="Limpiar Filtros" 
+                icon="pi pi-filter-slash"
+                pTooltip="Limpiar todos los filtros" 
+                tooltipPosition="left"
+                class="p-button-secondary mr-2 ml-2" 
+                (click)="clearFilters()">
+            </button>
+            <button pButton type="button" icon="pi pi-plus mr-2"
+                    *ngIf="checkPermission('tipoDocumento:crear')" (click)="openNew()"
+                    pTooltip="Agregar Tipo de Documento" tooltipPosition="left"
+                    [attr.disabled]="loading ? true : null"> Agregar </button>
+        </ng-template>
+    </p-toolbar>
+
+    <form (ngSubmit)="applyFilters()">
+        <p-table #dt [value]="listaTipoDocumentos" dataKey="idTipoDocumento" styleClass="p-datatable-sm p-datatable-grouped"
+                [rows]="10000" [paginator]="false" [globalFilterFields]="['nombre', 'nombreTipoRecurso']"
+                [loading]="loading" [totalRecords]="totalRecords" responsiveLayout="scroll"
+                [lazy]="false"
+                [rowGroupMode]="'subheader'" [groupRowsBy]="'nombreTipoRecurso'"
+                sortMode="single" [sortField]="'nombreTipoRecurso'" [sortOrder]="1">
+            
+            <!-- ENCABEZADOS -->
+            <ng-template pTemplate="header" let-columns>
+                <tr [formGroup]="searchFormGroup">
+                    <th pResizableColumn style="width:30%">
+                        <div pSortableColumn="nombre" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Nombre <p-sortIcon field="nombre"></p-sortIcon>
+                        </div>
+                        <input pInputText formControlName="nombre" style="width:100%" placeholder="Buscar por nombre"
+                            (keydown)="onNombreKeydown($event)">
+                    </th>
+
+                    <!-- <th pResizableColumn style="width:25%">
+                        <div pSortableColumn="tipoRecurso" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Tipo Recurso <p-sortIcon field="tipoRecurso"></p-sortIcon>
+                        </div>
+                        <p-dropdown 
+                            [options]="tipoRecursoOptionsWithAll" 
+                            formControlName="tipoRecurso" 
+                            optionLabel="label" 
+                            optionValue="value" 
+                            placeholder="Filtrar por tipo recurso" 
+                            (onChange)="applyFilters()"
+                            appendTo="body">
+                        </p-dropdown>
+                    </th> -->
+
+                    <th pResizableColumn style="width:15%">
+                        <div pSortableColumn="estado" class="p-d-flex p-jc-between p-ai-center mb-2">
+                            Estado <p-sortIcon field="estado"></p-sortIcon>
+                        </div>
+                        <p-dropdown 
+                            [options]="estadoOptionsWithAll" 
+                            formControlName="estado" 
+                            optionLabel="label" 
+                            optionValue="value" 
+                            placeholder="Filtrar por estado" 
+                            (onChange)="applyFilters()"
+                            appendTo="body">
+                        </p-dropdown>
+                    </th>
+
+                    <th style="width:30%">
+                        <div class="p-d-flex p-jc-between p-ai-center">Acciones</div>
+                    </th>
+                    <input type="submit" hidden>
+                </tr>
+            </ng-template>
+
+            <!-- GRUPO HEADER -->
+            <ng-template pTemplate="groupheader" let-tipoDocumento>
+                <tr class="p-rowgroup-header" (click)="toggleGroup(tipoDocumento.nombreTipoRecurso || 'Sin asignar')">
+                    <td colspan="4">
+                        <div class="group-header-container">
+                            <button type="button" class="group-toggle-btn" (click)="toggleGroup(tipoDocumento.nombreTipoRecurso || 'Sin asignar'); $event.stopPropagation()">
+                                <i [class]="isGroupExpanded(tipoDocumento.nombreTipoRecurso || 'Sin asignar') ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" 
+                                   class="group-toggle-icon"></i>
+                            </button>
+                            <i [class]="isGroupExpanded(tipoDocumento.nombreTipoRecurso || 'Sin asignar') ? 'pi pi-folder-open' : 'pi pi-folder'" 
+                               class="group-header-icon"></i>
+                            <span class="group-header-label">{{ tipoDocumento.nombreTipoRecurso || 'Sin asignar' }}</span>
+                            <!-- <p-tag [value]="tipoDocumento.nombreTipoRecurso" severity="info" styleClass="group-header-tag"></p-tag> -->
+                            <span class="group-item-count">
+                                ({{ getGroupItemCount(tipoDocumento.nombreTipoRecurso || 'Sin asignar') }})
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <!-- CUERPO -->
+            <ng-template pTemplate="body" let-tipoDocumento>
+                <tr *ngIf="shouldShowRow(tipoDocumento)" 
+                    class="group-row-expanded">                
+                    <td>
+                        <div style="max-width: 200px; word-wrap: break-word;">
+                            {{ tipoDocumento.nombre }}
+                        </div>
+                    </td>
+
+                    <td class="text-center">
+                        <p-tag [value]="tipoDocumento.estado ? 'ACTIVO' : 'INACTIVO'" 
+                            [severity]="tipoDocumento.estado ? 'success' : 'danger'">
+                        </p-tag>
+                    </td>
+
+                    <td>
+                        <div class="flex justify-content-center">
+                            <button pButton pRipple icon="pi pi-eye" class="p-button-info mr-2"
+                                    (click)="viewTipoDocumento(tipoDocumento)" pTooltip="Ver"></button>
+                            <button pButton pRipple icon="pi pi-pencil" class="p-button-warning mr-2"
+                                    *ngIf="checkPermission('tipoDocumento:editar')"
+                                    (click)="editTipoDocumento(tipoDocumento)" pTooltip="Editar"></button>
+                            <button pButton type="button" class="p-button-success" icon="pi pi-check-circle" 
+                                    *ngIf="tipoDocumento?.estado" pTooltip="Inactivar" (click)="updateStatus(tipoDocumento)"></button>
+                            <button pButton type="button" class="p-button-danger" icon="pi pi-circle-off" 
+                                    *ngIf="!tipoDocumento?.estado" pTooltip="Activar" (click)="updateStatus(tipoDocumento)"></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4">No se encontraron tipos de documento registrados.</td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="paginatorleft">
+                <h6>Total: {{ totalRecords }}</h6>
+            </ng-template>
+        </p-table>
+
+        <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+    </form>
+
+    <app-tipo-documento-form
+            *ngIf="showDialog"
+            [(visible)]="showDialog"
+            [row]="selectedTipoDocumento"
+            [isViewMode]="isViewMode"
+            (onResponse)="onFormResponse($event)">
+    </app-tipo-documento-form>
+</div>
+

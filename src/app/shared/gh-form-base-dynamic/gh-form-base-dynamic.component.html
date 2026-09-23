@@ -1,0 +1,517 @@
+<div class="card">
+    <div class="p-fluid">
+        <p class="info-requerid w-full">(*) Son campos obligatorios.</p>
+    
+            <form [formGroup]="dynamicForm" (ngSubmit)="procesar()">
+    
+                <p-tabView *ngIf="isTabbed" [(activeIndex)]="activeTabIndex">
+                    <p-tabPanel *ngFor="let tab of tabs; let i = index">
+                        <ng-template pTemplate="header">
+                            <span [innerHTML]="tab.label"></span>
+                            <span *ngIf="hasSubmitted && invalidTabs[i]" class="tab-error-indicator">(*)</span>
+                        </ng-template>
+    
+                        <div class="formgrid grid">
+                            <ng-container *ngFor="let field of tab.fields">
+                                <div class="col-12"
+                                    [ngClass]="{'field': field.type !== 'title' && field.type !== 'subtitle'}"
+                                    [class]="'md:col-' + field.columns"
+                                    *ngIf="field.visible === undefined || field.visible === true">
+                    
+                                    <ng-container [ngSwitch]="field.type !== 'submit' && field.type !== 'button'">
+                                        <h2 *ngSwitchCase="'title'" [class]="field.class || 'mb-4'">{{field.label}}</h2>
+                                        <h4 *ngSwitchCase="'subtitle'" [class]="field.class || 'mb-3'">{{field.label}}</h4>
+                    
+                                        <ng-container *ngSwitchDefault>
+                                            <ng-container *ngIf="field.visible === undefined || field.visible === true">
+                                                <label *ngIf="field.type !== 'hidden' && field.type !== 'button' && field.type !== 'submit'">{{ field.label }}</label>
+                                                <div *ngIf="field.infoMessage" class="p-text-secondary p-mb-2" [innerHTML]="field.infoMessage"></div>
+
+                                                <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name"
+                                                    class="p-inputtext p-component mt-1" [placeholder]="field.placeholder ? field.placeholder : ''"/>
+
+                                                <input *ngIf="field.type === 'number'" type="number" [formControlName]="field.name"
+                                                    class="p-inputtext p-component mt-1" [placeholder]="field.placeholder ? field.placeholder : ''"/>
+
+                                                <textarea *ngIf="field.type === 'textarea'" rows="5" cols="30" class="w-full"
+                                                    pInputTextarea [formControlName]="field.name" class="p-inputtext p-component mt-1" 
+                                                    [placeholder]="field.placeholder ? field.placeholder : ''">
+                                                </textarea>
+
+                                                <div *ngIf="field.type === 'editor'" class="editor-wrapper mt-1">
+                                                    <p-editor 
+                                                        [formControlName]="field.name" 
+                                                        [style]="{'height': field.height || '320px'}"
+                                                        [placeholder]="field.placeholder ? field.placeholder : ''"
+                                                        [disabled]="field.disabled || isViewMode"
+                                                        styleClass="custom-editor"
+                                                        (onInit)="onEditorInit($event, field.name)"
+                                                        (onTextChange)="onEditorTextChange($event, field.name)">
+                                                    </p-editor>
+                                                </div>
+            
+                                                <div *ngIf="field.type === 'file' || field.type === 'fileLazy'" class="p-field">
+                                                    <div class="file-upload-container">
+                                                        <!-- Mostrar el botón de carga solo si NO estamos en modo visualización -->
+                                                        <p-fileUpload #fileUploader 
+                                                            *ngIf="!isViewMode"
+                                                            mode="basic" 
+                                                            chooseLabel="Seleccionar"
+                                                            [chooseIcon]="field.icon || 'pi pi-plus'"
+                                                            [name]="field.name"
+                                                            (onSelect)="customUploadHandler($event, field.name, fileUploader)"
+                                                            [auto]="true"
+                                                            [customUpload]="true"
+                                                            [showCancelButton]="false"
+                                                            [showUploadButton]="false"
+                                                            [multiple]="field.multiple"
+                                                            [disabled]="!field.multiple && isFileUploaded[field.name]"
+                                                            [accept]="field.accept || ''">
+                                                        </p-fileUpload>
+
+                                                        <div *ngIf="field.description" class="file-description mt-2">
+                                                            <small class="p-text-secondary">{{ field.description }}</small>
+                                                        </div>
+
+                                                        <div *ngIf="field.type === 'file' && field.showPreview && getImagePreview(field.name)" 
+                                                            class="image-preview-container mt-3">
+                                                            <label class="preview-label" 
+                                                                style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057; font-size: 14px;">
+                                                                Vista Previa:
+                                                            </label>
+                                                            <img [src]="getImagePreview(field.name)" 
+                                                                alt="Vista previa de la imagen" 
+                                                                class="preview-image"
+                                                                style="max-width: 100%; max-height: 200px; border-radius: 4px; object-fit: cover; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block;">
+                                                        </div>
+
+                                                        <div *ngIf="field.type === 'fileLazy' && field.showPreview && getFileLazyPreview(field.name)" 
+                                                            class="image-preview-container mt-3">
+                                                            <label class="preview-label" 
+                                                                style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057; font-size: 14px;">
+                                                                Vista Previa:
+                                                            </label>
+                                                            <!-- Mostrar video si es video -->
+                                                            <video *ngIf="isVideoFile(field.name)" 
+                                                                [src]="getFileLazyPreview(field.name)" 
+                                                                controls
+                                                                class="preview-video"
+                                                                style="max-width: 100%; max-height: 300px; border-radius: 4px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block;">
+                                                            </video>
+                                                            <!-- Mostrar imagen si es imagen -->
+                                                            <img *ngIf="!isVideoFile(field.name)" 
+                                                                [src]="getFileLazyPreview(field.name)" 
+                                                                alt="Vista previa de la imagen" 
+                                                                class="preview-image"
+                                                                loading="lazy"
+                                                                style="max-width: 100%; max-height: 200px; border-radius: 4px; object-fit: cover; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block;">
+                                                        </div>
+
+                                                        <!-- Lista de archivos -->
+                                                        <div *ngIf="uploadedFileName[field.name]?.length > 0" class="file-list mt-3">
+                                                            <div *ngFor="let fileName of uploadedFileName[field.name]; let i = index" 
+                                                                class="file-info p-d-flex p-ai-center p-mb-2 p-p-2 p-border-1 p-border-300">
+                                                                
+                                                                <!-- Icono de archivo -->
+                                                                <i class="pi pi-file p-mr-2"></i>
+                                                                
+                                                                <!-- Nombre del archivo -->
+                                                                <span class="p-mr-auto">{{ fileName }}</span>
+                                                                
+                                                                <!-- Barra de progreso (solo si está cargando) -->
+                                                                <p-progressBar *ngIf="uploadProgress[field.name]?.[i] > 0 && uploadProgress[field.name]?.[i] < 100"
+                                                                    [value]="uploadProgress[field.name][i]" 
+                                                                    [showValue]="false"
+                                                                    styleClass="file-progress p-mr-2"
+                                                                    [style]="{'width': '100px', 'height': '10px'}">
+                                                                </p-progressBar>
+                                                                
+                                                                <!-- Botón de descarga (solo en modo visualización) -->
+                                                                <button *ngIf="isViewMode" pButton 
+                                                                    type="button" 
+                                                                    icon="pi pi-download"
+                                                                    class="p-button-rounded p-button-text p-button-info p-mr-2"
+                                                                    (click)="downloadFile(field.name, i)"
+                                                                    pTooltip="Descargar archivo"
+                                                                    tooltipPosition="top">
+                                                                </button>
+                                                                
+                                                                <!-- Botón de eliminar (solo si NO estamos en modo visualización) -->
+                                                                <button *ngIf="!isViewMode" pButton 
+                                                                    type="button" 
+                                                                    icon="pi pi-times"
+                                                                    class="p-button-rounded p-button-text p-button-danger"
+                                                                    (click)="removeFile(field.name, field.multiple ? i : undefined, fileUploader)"
+                                                                    pTooltip="Quitar archivo"
+                                                                    tooltipPosition="top">
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Mensaje cuando no hay archivos -->
+                                                        <div *ngIf="isViewMode && uploadedFileName[field.name]?.length === 0" class="p-text-secondary mt-2">
+                                                            No hay archivos adjuntos
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <p-dropdown appendTo="body" *ngIf="field.type === 'dropdown'" [formControlName]="field.name"
+                                                    [options]="field.options" optionLabel="label" optionValue="value"
+                                                    [placeholder]="field.placeholder ? field.placeholder : ''" [showClear]="true"
+                                                    styleClass="mt-1" [ngStyle]="getFieldStyleWithDefault(field)" [filter]="true">
+                                                </p-dropdown>
+
+                                                <p-multiSelect appendTo="body" *ngIf="field.type === 'multiselect'"
+                                                    [formControlName]="field.name"
+                                                    [options]="field.options" optionLabel="label" optionValue="value"
+                                                    [placeholder]="field.placeholder ? field.placeholder : ''"
+                                                    [showClear]="true" [filter]="true"
+                                                    styleClass="mt-1"
+                                                    [ngStyle]="getFieldStyleWithDefault(field)">
+                                                </p-multiSelect>
+                        
+                                                <p-calendar appendTo="body" *ngIf="field.type === 'date' || field.type === 'calendar'" styleClass="mt-1" [formControlName]="field.name"
+                                                    [dateFormat]="field.dateFormat || 'dd-mm-yy'" [showIcon]="field.showIcon !== false" [placeholder]="field.placeholder ? field.placeholder : ''"
+                                                    [showTime]="false" [showSeconds]="false" [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2030"
+                                                    [ngStyle]="getFieldStyleWithDefault(field)">
+                                                </p-calendar>
+
+                                                <p-calendar *ngIf="field.type === 'datetime'" [formControlName]="field.name"
+                                                            dateFormat="dd-mm-yy" showIcon="true" [placeholder]="field.placeholder ? field.placeholder : ''"
+                                                            [showTime]="true" [showSeconds]="false" [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2030"
+                                                            [appendTo]="'body'"
+                                                            [ngStyle]="getFieldStyleWithDefault(field)">
+                                                </p-calendar>
+
+                                                <p-calendar *ngIf="field.type === 'time'" appendTo="body" styleClass="mt-1" [formControlName]="field.name"
+                                                    [timeOnly]="true" [showTime]="true" [showSeconds]="false" 
+                                                    [hourFormat]="field.hourFormat || '24'"
+                                                    [placeholder]="field.placeholder ? field.placeholder : ''"
+                                                    [ngStyle]="getFieldStyleWithDefault(field)">
+                                                </p-calendar>
+                        
+                                                <div *ngIf="field.type === 'checkbox'" class="checkbox-wrapper mt-1">
+                                                    <p-checkbox [formControlName]="field.name" binary="true">
+                                                    </p-checkbox>
+                                                </div>
+                        
+                                                <div *ngIf="field.type === 'switch'" class="switch-wrapper mt-1 d-flex align-items-center">
+                                                    <p-inputSwitch [formControlName]="field.name"></p-inputSwitch>
+                                                </div>
+                        
+                                                <div *ngIf="field.type === 'checkboxGroup'" class="p-grid mt-2">
+                                                    <div *ngFor="let option of field.options" class="p-col-12 ml-2 mb-2">
+                                                        <p-checkbox [formControlName]="field.name" [value]="option.value"
+                                                            label="{{option.label}}" binary="false">
+                                                        </p-checkbox>
+                                                    </div>
+                                                </div>
+                        
+                                                <div *ngIf="field.type === 'radioGroup'">
+                                                    <div *ngFor="let option of field.options" class="mt-3">
+                                                        <p-radioButton [value]="option.value" [formControlName]="field.name"
+                                                            [label]="option.label">{{ option.value }}</p-radioButton>
+                                                    </div>
+                                                </div>
+                        
+                                                <div *ngIf="field.type === 'selectButton'" class="mt-1">
+                                                    <p-selectButton [options]="field.options" [formControlName]="field.name"
+                                                        optionLabel="label" optionValue="value" class="p-highlight pSelectButtonStyle">
+                                                    </p-selectButton>
+                                                </div>
+                        
+                                                <input *ngIf="field.type === 'hidden'" type="hidden" [formControlName]="field.name">
+                        
+                                                <small *ngIf="dynamicForm.get(field.name) && dynamicForm.get(field.name).invalid 
+                                                        && dynamicForm.get(field.name).touched" class="p-error">
+                                                    {{ getFieldErrorMessage(field) }}
+                                                </small>
+                        
+                                            </ng-container>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <ng-container *ngTemplateOutlet="tabContent?.get(i) || null"></ng-container>
+                    </p-tabPanel>
+                </p-tabView>
+    
+                <!--Form si hay un solo tab-->
+                <div *ngIf="!isTabbed">
+                    <div class="p-formgrid grid">
+                        <ng-container *ngFor="let field of fields">
+                            <div class="col-12" 
+                                [ngClass]="{'field': field.type !== 'title' && field.type !== 'subtitle'}" 
+                                [class]="'md:col-' + field.columns" 
+                                *ngIf="field.visible === undefined || field.visible === true">
+
+
+                                <ng-container [ngSwitch]="field.type !== 'submit' && field.type !== 'button'">
+                                    <h2 *ngSwitchCase="'title'" [class]="field.class || 'mb-4'">{{field.label}}</h2>
+                                    <h4 *ngSwitchCase="'subtitle'" [class]="field.class || 'mb-3'">{{field.label}}</h4>
+                                    
+                                    
+                                    <ng-container *ngSwitchDefault>
+                                        <ng-container *ngIf="field.visible === undefined || field.visible === true">
+
+                                            <label *ngIf="field.type !== 'hidden' && field.type !== 'button' && field.type !== 'submit'">{{ field.label }}</label>
+
+                                            <div *ngIf="field.infoMessage" class="p-text-secondary p-mb-2" [innerHTML]="field.infoMessage"></div>
+
+                                            <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name"
+                                                class="p-inputtext p-component mt-1" [placeholder]="field.placeholder ? field.placeholder : ''"/>
+
+                                            <input *ngIf="field.type === 'number'" type="number" [formControlName]="field.name"
+                                                class="p-inputtext p-component mt-1" [placeholder]="field.placeholder ? field.placeholder : ''"/>
+                    
+                                            <textarea *ngIf="field.type === 'textarea'" rows="5" cols="30" class="w-full"
+                                                pInputTextarea [formControlName]="field.name" class="p-inputtext p-component mt-1" 
+                                                [placeholder]="field.placeholder ? field.placeholder : ''">
+                                            </textarea>
+
+                                            <div *ngIf="field.type === 'editor'" class="editor-wrapper mt-1">
+                                                <p-editor 
+                                                    [style]="{'height': field.height || '320px'}"
+                                                    [placeholder]="field.placeholder ? field.placeholder : ''"
+                                                    [disabled]="isViewMode"
+                                                    styleClass="custom-editor"
+                                                    (onInit)="onEditorInit($event, field.name)"
+                                                    (onTextChange)="onEditorTextChange($event, field.name)">
+                                                </p-editor>
+                                                <!-- Campo oculto para mantener el valor del FormControl -->
+                                                <input type="hidden" [formControlName]="field.name">
+                                            </div>
+            
+                                            <!-- Reemplazar la sección de archivo (file) en gh-form-base-dynamic.component.html -->
+                                            <div *ngIf="field.type === 'file' || field.type === 'fileLazy'" class="p-field">
+                                                <div class="file-upload-container">
+                                                    <!-- Mostrar el botón de carga solo si NO estamos en modo visualización -->
+                                                    <p-fileUpload #fileUploader 
+                                                        *ngIf="!isViewMode"
+                                                        mode="basic" 
+                                                        chooseLabel="Seleccionar"
+                                                        [chooseIcon]="field.icon || 'pi pi-plus'"
+                                                        [name]="field.name"
+                                                        (onSelect)="customUploadHandler($event, field.name, fileUploader)"
+                                                        [auto]="true"
+                                                        [customUpload]="true"
+                                                        [showCancelButton]="false"
+                                                        [showUploadButton]="false"
+                                                        [multiple]="field.multiple"
+                                                        [disabled]="!field.multiple && isFileUploaded[field.name]">
+                                                    </p-fileUpload>
+
+                                                    <div *ngIf="field.description" class="file-description mt-2">
+                                                        <small class="p-text-secondary">{{ field.description }}</small>
+                                                    </div>
+
+                                                    <!-- Vista previa de imagen para 'file' (método original) -->
+                                                    <div *ngIf="field.type === 'file' && field.showPreview && getImagePreview(field.name)" 
+                                                        class="image-preview-container mt-3"
+                                                        style="border:1px solid #ccc;padding: 20px; border-radius:4px;">
+                                                        <label class="preview-label" 
+                                                            style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057; font-size: 14px;">
+                                                            Vista Previa:
+                                                        </label>
+                                                        <img [src]="getImagePreview(field.name)" 
+                                                            alt="Vista previa de la imagen" 
+                                                            class="preview-image"
+                                                            style="max-width: 100%; max-height: 200px; border-radius: 4px; object-fit: cover; 
+                                                            border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block;">
+                                                    </div>
+
+                                                    <!-- Vista previa de archivo (imagen o video) para 'fileLazy' (método lazy con endpoint) -->
+                                                    <div *ngIf="field.type === 'fileLazy' && field.showPreview && getFileLazyPreview(field.name)" 
+                                                        class="image-preview-container mt-3"
+                                                        style="border:1px solid #ccc;padding: 20px; border-radius:4px;">
+                                                        <label class="preview-label" 
+                                                            style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057; font-size: 14px;">
+                                                            Vista Previa:
+                                                        </label>
+                                                        <!-- Mostrar video si es video -->
+                                                        <video *ngIf="isVideoFile(field.name)" 
+                                                            [src]="getFileLazyPreview(field.name)" 
+                                                            controls
+                                                            class="preview-video"
+                                                            style="max-width: 100%; max-height: 300px; border-radius: 4px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block;">
+                                                        </video>
+                                                        <!-- Mostrar imagen si es imagen -->
+                                                        <img *ngIf="!isVideoFile(field.name)" 
+                                                            [src]="getFileLazyPreview(field.name)" 
+                                                            alt="Vista previa de la imagen" 
+                                                            class="preview-image"
+                                                            loading="lazy"
+                                                            style="max-width: 100%; max-height: 200px; border-radius: 4px; object-fit: cover; 
+                                                            border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block;">
+                                                    </div>
+
+                                                    <!-- Lista de archivos -->
+                                                    <div *ngIf="uploadedFileName[field.name]?.length > 0" class="file-list mt-3">
+                                                        <div *ngFor="let fileName of uploadedFileName[field.name]; let i = index" 
+                                                            class="file-info p-d-flex p-ai-center p-mb-2 p-p-2 p-border-1 p-border-300">
+                                                            
+                                                            <!-- Icono de archivo -->
+                                                            <i class="pi pi-file p-mr-2"></i>
+                                                            
+                                                            <!-- Nombre del archivo -->
+                                                            <span class="p-mr-auto">{{ fileName }}</span>
+                                                            
+                                                            <!-- Barra de progreso (solo si está cargando) -->
+                                                            <p-progressBar *ngIf="uploadProgress[field.name]?.[i] > 0 && uploadProgress[field.name]?.[i] < 100"
+                                                                [value]="uploadProgress[field.name][i]" 
+                                                                [showValue]="false"
+                                                                styleClass="file-progress p-mr-2"
+                                                                [style]="{'width': '100px', 'height': '10px'}">
+                                                            </p-progressBar>
+                                                            
+                                                            <!-- Botón de descarga (solo en modo visualización) -->
+                                                            <button *ngIf="isViewMode" pButton 
+                                                                type="button" 
+                                                                icon="pi pi-download"
+                                                                class="p-button-rounded p-button-text p-button-info p-mr-2"
+                                                                (click)="downloadFile(field.name, i)"
+                                                                pTooltip="Descargar archivo"
+                                                                tooltipPosition="top">
+                                                            </button>
+                                                            
+                                                            <!-- Botón de eliminar (solo si NO estamos en modo visualización) -->
+                                                            <button *ngIf="!isViewMode" pButton 
+                                                                type="button" 
+                                                                icon="pi pi-times"
+                                                                class="p-button-rounded p-button-text p-button-danger"
+                                                                (click)="removeFile(field.name, field.multiple ? i : undefined, fileUploader)"
+                                                                pTooltip="Quitar archivo"
+                                                                tooltipPosition="top">
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Mensaje cuando no hay archivos -->
+                                                    <div *ngIf="isViewMode && uploadedFileName[field.name]?.length === 0" class="p-text-secondary mt-2">
+                                                        No hay archivos adjuntos
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                                                
+            
+                                    <p-dropdown appendTo="body" *ngIf="field.type === 'dropdown'" [formControlName]="field.name"
+                                        [options]="field.options" optionLabel="label" optionValue="value"
+                                        [placeholder]="field.placeholder ? field.placeholder : ''" [showClear]="true"
+                                        styleClass="mt-1" [ngStyle]="getFieldStyleWithDefault(field)" [filter]="true">
+                                    </p-dropdown>
+
+                                    <p-multiSelect appendTo="body" *ngIf="field.type === 'multiselect'"
+                                        [formControlName]="field.name"
+                                        [options]="field.options" optionLabel="label" optionValue="value"
+                                        [placeholder]="field.placeholder ? field.placeholder : ''"
+                                        [showClear]="true" [filter]="true"
+                                        styleClass="mt-1"
+                                        [ngStyle]="getFieldStyleWithDefault(field)">
+                                    </p-multiSelect>
+            
+                                    <p-calendar appendTo="body" *ngIf="field.type === 'date' || field.type === 'calendar'" styleClass="mt-1" [formControlName]="field.name"
+                                        [dateFormat]="field.dateFormat || 'dd-mm-yy'" [showIcon]="field.showIcon !== false" [placeholder]="field.placeholder ? field.placeholder : ''"
+                                        [showTime]="false" [showSeconds]="false" [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2030"
+                                        [ngStyle]="getFieldStyleWithDefault(field)">
+                                    </p-calendar>
+
+                                            <p-calendar *ngIf="field.type === 'datetime'" [formControlName]="field.name"
+                                                        dateFormat="dd-mm-yy" showIcon="true" [placeholder]="field.placeholder ? field.placeholder : ''"
+                                                        [showTime]="true" [showSeconds]="false" [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2030"
+                                                        [appendTo]="'body'"
+                                                        [ngStyle]="getFieldStyleWithDefault(field)">
+                                            </p-calendar>
+
+                                            <p-calendar *ngIf="field.type === 'time'" appendTo="body" styleClass="mt-1" [formControlName]="field.name"
+                                                [timeOnly]="true" [showTime]="true" [showSeconds]="false" 
+                                                [hourFormat]="field.hourFormat || '24'"
+                                                [placeholder]="field.placeholder ? field.placeholder : ''"
+                                                [ngStyle]="getFieldStyleWithDefault(field)">
+                                            </p-calendar>
+                    
+                                            <div *ngIf="field.type === 'checkbox'" class="checkbox-wrapper mt-1">
+                                                <p-checkbox [formControlName]="field.name" binary="true">
+                                                </p-checkbox>
+                                            </div>
+                    
+                                            <div *ngIf="field.type === 'switch'" class="switch-wrapper mt-1 d-flex align-items-center">
+                                                <p-inputSwitch [formControlName]="field.name"></p-inputSwitch>
+                                            </div>
+                    
+                                            <div *ngIf="field.type === 'checkboxGroup'" class="p-grid mt-2">
+                                                <div *ngFor="let option of field.options" class="p-col-12 ml-2 mb-2">
+                                                    <p-checkbox [formControlName]="field.name" [value]="option.value"
+                                                        label="{{option.label}}" binary="false">
+                                                    </p-checkbox>
+                                                </div>
+                                            </div>
+                    
+                                            <div *ngIf="field.type === 'radioGroup'">
+                                                <div *ngFor="let option of field.options" class="mt-3">
+                                                    <p-radioButton [value]="option.value" [formControlName]="field.name"
+                                                        [label]="option.label">{{ option.value }}</p-radioButton>
+                                                </div>
+                                            </div>
+                    
+                                            <div *ngIf="field.type === 'selectButton'" class="mt-1">
+                                                <p-selectButton [options]="field.options" [formControlName]="field.name"
+                                                    optionLabel="label" optionValue="value" class="p-highlight pSelectButtonStyle">
+                                                </p-selectButton>
+                                            </div>
+                    
+                                            <input *ngIf="field.type === 'hidden'" type="hidden" [formControlName]="field.name">
+                    
+                                            <small *ngIf="dynamicForm.get(field.name) && dynamicForm.get(field.name).invalid 
+                                                    && dynamicForm.get(field.name).touched" class="p-error">
+                                                {{ getFieldErrorMessage(field) }}
+                                            </small>
+                    
+                                            <!-- <div class="text-right mt-3" *ngIf="field.type === 'button' || field.type === 'submit'">
+                                                <button pButton pRipple 
+                                                        [type]="field.type === 'submit' ? 'submit' : 'button'" 
+                                                        [label]="field.label" 
+                                                        [icon]="field.icon" 
+                                                        [class]="field.class"
+                                                        [attr.data-action]="field.type"
+                                                        (click)="field.type === 'button' ? field.callback(dynamicForm.value) : null">
+                                                </button>
+                                            </div> -->
+                                        </ng-container>
+                                    </ng-container>
+
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+    
+                <!-- Contenedor para los Botones -->
+                <div class="button-container p-d-flex p-jc-end p-mt-4">
+                    <!-- Botón Anterior (Solo si hay tabs y no es la primera tab) -->
+                    <button pButton label="Anterior" icon="pi pi-angle-left" class="p-button-secondary"
+                        *ngIf="isTabbed && activeTabIndex > 0" (click)="prevTab()" type="button"></button>
+    
+                    <!-- Botón Siguiente (Solo si hay tabs y no es la última tab) -->
+                    <button pButton label="Siguiente" icon="pi pi-angle-right" class="p-button-primary"
+                        *ngIf="isTabbed && !isLastTab" (click)="nextTab()" type="button"></button>
+    
+                    <!-- Botones de Enviar y Cancelar (Se muestran en la última tab o en formulario sin tabs) -->
+                    <ng-container *ngIf="isLastTab || !isTabbed">
+                        <ng-container *ngFor="let tab of formConfig">
+                            <ng-container *ngFor="let field of tab.fields">
+                                <button *ngIf="(field.visible == undefined || field.visible == true) && (field.type === 'submit' || field.type === 'button')"
+                                    pButton 
+                                    [label]="field.label" 
+                                    [icon]="field.icon" 
+                                    [class]="field.class"
+                                    [type]="field.type === 'submit' ? 'submit' : 'button'"
+                                    (click)="field.type === 'button' && field.callback ? field.callback(field) : null">
+                                </button>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                </div>
+    
+        </form>
+    </div>
+</div>

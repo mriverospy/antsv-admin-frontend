@@ -1,0 +1,136 @@
+
+
+    <div class="p-grid p-fluid">
+    <div class="lg:w-9 mt-4">
+        <form action="#" method="POST">
+            
+            <!--
+            <div class="grid mb-4">
+                <div class="col-12 md:col-3">
+                    <label class="block mb-0">Recibir notificaciones</label>
+                    <p class="text-sm mt-0 text-color-secondary">Configura tus preferencias</p>
+                </div>
+                <div class="col-12 md:col-9">
+                    <div class="flex flex-column">
+                        <div class="field-radiobutton">
+                            <p-radioButton 
+                                inputId="alerts" 
+                                name="notificationPreference" 
+                                value="all" 
+                                [(ngModel)]="selectedNotificationPreference">
+                            </p-radioButton>
+                            <label for="alerts" class="ml-2">
+                                <div class="flex flex-column">
+                                    <span class="font-medium">Todas las notificaciones</span>
+                                    <span class="text-sm text-color-secondary">Deseo recibir todas las notificaciones de la plataforma</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="field-radiobutton">
+                            <p-radioButton 
+                                inputId="midalerts" 
+                                name="notificationPreference" 
+                                value="important" 
+                                [(ngModel)]="selectedNotificationPreference">
+                            </p-radioButton>
+                            <label for="midalerts" class="ml-2">
+                                <div class="flex flex-column">
+                                    <span class="font-medium">Solo notificaciones importantes</span>
+                                    <span class="text-sm text-color-secondary">Recibir notificaciones destacadas o relevantes</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="field-radiobutton">
+                            <p-radioButton 
+                                inputId="noalerts" 
+                                name="notificationPreference" 
+                                value="none" 
+                                [(ngModel)]="selectedNotificationPreference">
+                            </p-radioButton>
+                            <label for="noalerts" class="ml-2">
+                                <div class="flex flex-column">
+                                    <span class="font-medium">No recibir ninguna notificación</span>
+                                    <span class="text-sm text-color-secondary">Dejar de recibir alertas y notificaciones de la plataforma</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            -->
+
+            <!-- Bloque informativo sobre canales de notificación -->
+            <div class="grid mb-4">
+                <div class="col-12 md:col-3">
+                    <label class="block mb-0">Información</label>
+                </div>
+                <div class="col-12 md:col-9">
+                    <div class="notification-info-block">
+                        <i class="pi pi-info-circle info-icon"></i>
+                        <div class="info-text">
+                            <p>
+                                El sistema envía notificaciones de acuerdo con distintos eventos, como registro, aprobación de usuario, aprobación de organización, inscripción y confirmación a cursos o eventos, restablecimiento de contraseña, entre otros. Algunas notificaciones se muestran únicamente dentro de la plataforma y otras se envían por correo electrónico.
+                            </p>
+                            <p class="mt-2">
+                                El canal de envío depende automáticamente del tipo de evento y de las reglas internas de cada proceso. Desde esta sección, el usuario define si desea recibir todas las notificaciones del sistema o desactivar completamente la recepción de alertas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Toggle para Notificaciones -->
+            <!-- 
+            <div class="grid mb-4">
+                <div class="col-12 md:col-3 flex align-items-center">
+                    <label for="toggleNotifications" class="block mb-0">Activar notificaciones</label>
+                </div>
+                <div class="col-12 md:col-9 flex align-items-center">
+                    <p-inputSwitch 
+                        inputId="toggleNotifications" 
+                        [(ngModel)]="toggleValue" 
+                        name="toggleNotifications">
+                    </p-inputSwitch>
+                </div>
+            </div>
+            -->
+
+            <!-- 
+            Sección de Correo Electrónico 
+            <div class="grid mb-4">
+                <div class="col-12 md:col-3 flex align-items-center">
+                    <label for="emailNotifications" class="block mb-0">Correo electrónico</label>
+                </div>
+                <div class="col-12 md:col-9">
+                    <input 
+                        pInputText 
+                        type="email" 
+                        id="emailNotifications" 
+                        name="email_notifications" 
+                        [(ngModel)]="emailValue"
+                        class="w-full" 
+                        placeholder="Escribe tu correo aquí...">
+                </div>
+            </div>
+          
+            <div class="flex justify-content-center mt-5">
+                <p-button 
+                    label="Guardar cambios" 
+                    severity="primary" 
+                    styleClass="p-button-rounded"
+                    type="submit">
+                </p-button>
+                <p-button 
+                    label="Cancelar" 
+                    severity="secondary"
+                    styleClass="ml-2"
+                    [rounded]="true"
+                    routerLink="/home"
+                >
+                </p-button>
+            </div>
+             -->
+        </form>
+    </div>
+

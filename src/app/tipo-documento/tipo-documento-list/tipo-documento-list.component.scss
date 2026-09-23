@@ -1,0 +1,149 @@
+:host ::ng-deep {
+  // Estilos para la tabla agrupada con acordeón
+  .p-datatable-grouped {
+    .p-rowgroup-header {
+      background: #E3F2FD; // Tono info suave de PrimeNG (#B3E5FC es más claro, #E3F2FD es el que usamos)
+      color: #01579B; // Color de texto info de PrimeNG
+      font-weight: 600;
+      border-bottom: 2px solid #BBDEFB;
+      border-left: 4px solid #2196F3;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+      margin-bottom: 4px;
+      
+      &:hover {
+        background: #BBDEFB;
+        border-left-color: #1976D2;
+      }
+      
+      .group-header-container {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 6px;
+        margin: 0;
+        
+        .group-toggle-btn {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 6px 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 4px;
+          transition: all 0.2s ease;
+          color: #01579B;
+          min-width: 28px;
+          min-height: 28px;
+          
+          &:hover {
+            background: rgba(1, 87, 155, 0.1);
+          }
+          
+          &:focus {
+            outline: 2px solid rgba(1, 87, 155, 0.3);
+            outline-offset: 2px;
+          }
+          
+          .group-toggle-icon {
+            font-size: 0.875rem;
+            transition: transform 0.3s ease;
+            font-weight: bold;
+          }
+        }
+        
+        .group-header-icon {
+          font-size: 1.3rem;
+          color: #01579B;
+        }
+        
+        .group-header-label {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #01579B;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .group-header-tag {
+          background: rgba(1, 87, 155, 0.15);
+          border: 1px solid rgba(1, 87, 155, 0.3);
+          color: #01579B;
+          font-weight: 500;
+          padding: 4px 10px;
+        }
+        
+        .group-item-count {
+          margin-left: auto;
+          font-size: 1rem;
+          color: #041B2D !important;
+          font-weight: 500;
+          background: #E3F2FD;
+          padding: 4px 10px;
+          border-radius: 12px;
+        }
+      }
+    }
+    
+    // Estilos para las filas del grupo con animación de acordeón
+    tbody tr:not(.p-rowgroup-header) {
+      background: #ffffff;
+      transition: all 0.3s ease;
+      
+      &.group-row-expanded {
+        display: table-row;
+        opacity: 1;
+        animation: slideDown 0.3s ease;
+      }
+      
+      &:hover {
+        background: #F5F5F5;
+      }
+      
+      td {
+        padding: 6px;
+        border-bottom: 1px solid #E0E0E0;
+      }
+    }
+    
+    // Espaciado entre grupos
+    .p-rowgroup-header {
+      + tr.group-row-expanded {
+        border-top: 1px solid #E0E0E0;
+      }
+    }
+  }
+  
+  // Mejoras visuales para la tabla
+  .p-datatable {
+    .p-datatable-tbody > tr {
+      border-bottom: 1px solid #E0E0E0;
+    }
+    
+    .p-datatable-thead > tr > th {
+      background: #F8F9FA;
+      border-bottom: 2px solid #DEE2E6;
+      font-weight: 600;
+      color: #495057;
+      padding: 14px 24px;
+    }
+    
+    .p-datatable-tbody > tr > td {
+      padding: 14px 24px;
+    }
+  }
+}
+
+// Animación de deslizamiento suave
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

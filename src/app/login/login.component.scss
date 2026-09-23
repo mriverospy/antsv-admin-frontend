@@ -1,0 +1,110 @@
+.pages-body {
+    background: #ffffff;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #b6fbff, #83a4d4);  /* Chrome 10-25, Safari 5.1-6 */
+    //background: linear-gradient(to right, #b6fbff, #83a4d4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    //background-image: url("/assets/layout/images/backWrapperLogin.png");
+    background-position: bottom;
+    background-repeat: repeat-x;        
+}
+
+.overlay-images-container{
+  border-radius: 36px;
+}
+
+footer {
+    position: static;
+    clear: both;
+    color: #ed0808;
+    text-align: center;
+    bottom: 0;
+    padding: 18px 0;
+}
+
+.grid.button-demo button {
+    margin-top: 1rem;
+    background-color: #1163dd;
+}
+
+::ng-deep .p-button.p-button-icon-right .p-button-icon {
+  order: 2;
+  margin-left: 0.5em;
+  margin-right: 0;
+}
+
+//Remueve el borde del card Login
+
+:host ::ng-deep .card {
+  border: none !important;
+  box-shadow: none !important; // Si también quieres quitar la sombra
+} 
+
+@media (max-width: 991.98px) {
+  .pages-body.login-page {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+    padding: 0 !important;
+    background-size: cover !important;
+    background-position: center !important;
+  }
+  
+  .pages-body.login-page .left-panel {
+    width: 90% !important;
+    margin: 16px auto !important;
+    min-height: 150px !important;
+    max-height: 300px !important;
+    border-radius: 12px !important;
+  }
+    .pages-body.login-page .overlay-images-container > div {
+    display: none !important;
+  }
+    .pages-body.login-page .align-self-center {
+    width: 90% !important;
+    margin: 16px auto !important;
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .pages-body.login-page {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    width: 100vw !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .pages-body.login-page .left-panel {
+    width: 95vw !important;
+    margin: 12px auto !important;
+    min-height: 120px !important;
+    max-height: 200px !important;
+    border-radius: 8px !important;
+  }
+  
+  .pages-body.login-page .overlay-images-container video {
+    display: none !important;
+  }
+  
+  .pages-body.login-page .align-self-center {
+    width: 95vw !important;
+    margin: 12px auto !important;
+    padding: 0 0.5rem !important;
+  }
+  
+  .pages-body.login-page .pages-panel {
+    padding: 1rem !important;
+  }
+  
+  .pages-body.login-page .pages-detail {
+    font-size: 1.5rem !important;
+  }
+} 

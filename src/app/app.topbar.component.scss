@@ -1,0 +1,85 @@
+.layout-topbar
+  .layout-topbar-right
+  .layout-topbar-actions-right
+  .layout-topbar-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: auto !important;
+}
+
+.session-btn-white-text {
+  color: white !important;
+  border: none !important;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.session-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  padding: 1rem 1.4rem;
+  border-radius: 20px;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.round {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50% !important;
+  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.session-btn:hover,
+.round:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  color: #fff;
+}
+
+.fotoPerfil {
+  vertical-align: middle;
+  display: inline-block;
+  box-sizing: border-box;
+  background: #ffffff63;
+}
+
+.profile .layaout-topbar-action {
+  border-radius: 45% !important;
+  padding: 3px 16px 3px 3px !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.profile .layaout-topbar-action:hover {
+  border-radius: 45% !important;
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.icono-caret {
+  position: absolute;
+  top: 20px;
+  right: 4px;
+  font-size: 10px;
+}
+
+.visible-sm {
+  display: none !important;
+}
+
+@media (max-width: 614px) {
+  .visible-sm {
+    display: block !important;
+  }
+  .hidden-sm {
+    display: none !important;
+  }
+}

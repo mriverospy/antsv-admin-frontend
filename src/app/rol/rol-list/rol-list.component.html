@@ -1,0 +1,119 @@
+<div class="p-grid" *ngIf="checkPermission('roles:ver')">
+    <div class="p-col-12 p-md-12">
+        <div class="card card-datatables">
+
+            <p-toolbar styleClass="p-mb-12">
+                <h3 class="mb-0">Roles</h3>
+                <ng-template pTemplate="right">
+                    <ng-container *ngIf="mostrarFiltros">
+                        <button pButton pRipple label="Limpiar Filtros" icon="pi pi-filter-slash"
+                            pTooltip="Limpiar todos los filtros" tooltipPosition="left"
+                            class="p-button-secondary mr-2 ml-2" (click)="clearFilters()"></button>
+                    </ng-container>
+
+                    <button pButton pRipple [label]="mostrarFiltros ? 'Ocultar Filtros' : 'Filtrar'"
+                        [icon]="mostrarFiltros ? 'pi pi-eye-slash' : 'pi pi-sliders-h'" class="p-button-info mr-2"
+                        class="p-button-secondary mr-2 ml-2" (click)="toggleFiltros()"></button>
+
+
+                    <button pButton pRipple label="Agregar" *ngIf="checkPermission('roles:crear')" icon="pi pi-plus"
+                        class="p-button-primary p-mr-2 p-mb-2" (click)="openNew()"></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-blockUI [target]="table" [blocked]="block">
+                <p-progressSpinner class="spinner-position"></p-progressSpinner>
+            </p-blockUI>
+
+            <form (ngSubmit)="table.filterGlobal('', 'contains')">
+                <p-table #table dataKey="id" styleClass="p-datatable-styles" selectionMode="single"
+                    paginatorPosition="bottom" [columns]="cols" [value]="roles" [rows]="pageSize"
+                    [totalRecords]="totalRecords" [loading]="loading" [paginator]="true" [resizableColumns]="true"
+                    [sortOrder]="-1" [autoLayout]="true" [lazy]="true" (onLazyLoad)="load($event)">
+
+                    <ng-template pTemplate="header" let-columns>
+                        <tr [formGroup]="searchFormGroup">
+                            <th pResizableColumn>
+                                <div pSortableColumn="nombre" class="p-d-flex p-jc-between p-ai-center text-left">
+                                    Nombre <p-sortIcon field="nombre"></p-sortIcon>
+                                </div>
+                            </th>
+                            <th pResizableColumn>
+                                <div pSortableColumn="descripcion" class="p-d-flex p-jc-between p-ai-center text-left">
+                                    Descripción <p-sortIcon field="descripcion"></p-sortIcon>
+                                </div>
+                            </th>
+                            <th pResizableColumn>
+                                <div class="p-d-flex p-jc-between p-ai-center">Acciones</div>
+                            </th>
+                        </tr>
+                        <tr *ngIf="mostrarFiltros" [formGroup]="searchFormGroup" class="fila-filtros-datatables">
+                            <th>
+                                <input pInputText formControlName="nombre" class="w-100">
+                            </th>
+                            <th>
+                                <input pInputText formControlName="descripcion" class="w-100">
+                            </th>
+                            <th></th>
+                            <input type="submit" hidden>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-row>
+                        <tr class="p-selectable-row" [ngClass]="{ 'fila-inactiva': !row.estado }">
+                            <td>
+                                <span class="p-column-title">Nombre</span>
+                                {{ row?.nombre }}
+                            </td>
+                            <td>
+                                <span class="p-column-title">Descripción</span>
+                                {{ row?.descripcion }}
+                            </td>
+                            <td class="btn-acciones">
+                                <span class="p-column-title">Acciones</span>
+                                <button pButton type="button" *ngIf="checkPermission('roles:editar')"
+                                    icon="pi pi-pencil" class="p-button-secondary" pTooltip="Editar"
+                                    (click)="openEdit(row)"></button>
+                                <button pButton type="button" *ngIf="checkPermission('roles:editar')" icon="pi pi-cog"
+                                    class="p-button-secondary" pTooltip="Permisos"
+                                    (click)="openEditPermiso(row)"></button>
+                                <button pButton type="button" class="p-button-success ml-2" icon="pi pi-check"
+                                    *ngIf="row?.estado" pTooltip="Inactivar" (click)="updateStatus(row)"></button>
+                                <button pButton type="button" class="p-button-danger ml-2" icon="pi pi-circle-off"
+                                    *ngIf="!row?.estado" pTooltip="Activar" (click)="updateStatus(row)"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td class="emptymessage" colspan="3">
+                                <img src="assets/images/vacio.png">
+                                <p>No se encontraron datos disponibles</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="paginatorleft">
+                        <h6>Total: {{ totalRecords }}</h6>
+                    </ng-template>
+                </p-table>
+            </form>
+
+            <app-rol-form [row]="entity" [(visible)]="showDialog" (onResponse)="onResponse($event)"
+                (setVisible)="changeDialogVisibility($event)">
+            </app-rol-form>
+
+            <!-- <app-rol-permiso [row]="entity" [permisos]="permisos" [(visible)]="showDialogPermiso"
+                (onResponse)="onResponse($event)" (setVisible)="changeDialogVisibilityPermiso($event)">
+            </app-rol-permiso> -->
+
+            <app-rol-permiso-group [row]="entity" [permisos]="permisos" [(visible)]="showDialogPermiso"
+            (onResponse)="onResponse($event)" (setVisible)="changeDialogVisibilityPermiso($event)">
+            </app-rol-permiso-group>
+
+            <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+        </div>
+    </div>
+</div>

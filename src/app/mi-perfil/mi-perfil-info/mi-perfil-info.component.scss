@@ -1,0 +1,114 @@
+
+        /* Estilos personalizados */
+      
+
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .form-control {
+            border-radius: 0.5rem;
+            border-color: #e2e8f0;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(66, 153, 225, 0.25);
+            border-color: #4a5568;
+        }
+
+        .form-text {
+            color: #a0aec0;
+            font-size: 0.75rem;
+        }
+
+        .profile-image-container {
+            border: 2px dashed #cbd5e0;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .profile-image-container:hover {
+            border-color: #4338ca;
+        }
+
+        .profile-image-container.drag-over {
+            border-color: #4338ca;
+            background-color: rgba(67, 56, 202, 0.05);
+        }
+        
+        .upload-icon {
+            color: #4338ca;
+        }
+
+        // Estilos para el estado de archivo cargado
+        .file-upload-status {
+            .file-info {
+                background: #f8f9fa;
+                transition: all 0.2s ease;
+                
+                &:hover {
+                    background: #e9ecef;
+                }
+            }
+            
+            .progress-container {
+                margin-top: 8px;
+            }
+        }
+        .detail-icon {
+          font-size: 18px;
+          color: #3b82f6;
+          margin-top: 2px;
+          flex-shrink: 0;
+        }
+        .detail-content {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          flex: 1;
+        }
+        .detail-label {
+          font-size: 11px;
+          font-weight: 600;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        .detail-value {
+          font-size: 14px;
+          font-weight: 500;
+          color: #1e293b;
+          line-height: 1.4;
+        }
+        .roles-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 2px;
+        }
+        .role-badge {
+          display: inline-block;
+          padding: 4px 10px;
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 600;
+          border-radius: 6px;
+          letter-spacing: 0.3px;
+          box-shadow: 0 1px 3px rgba(59, 130, 246, 0.3);
+          transition: all 0.2s ease;
+
+          &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+          }
+        }
+  

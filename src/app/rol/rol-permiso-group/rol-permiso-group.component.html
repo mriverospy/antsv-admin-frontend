@@ -1,0 +1,272 @@
+<p-dialog
+    [header]="'Rol (' + (row?.nombre || '') + ')'"
+    styleClass="rol-permiso-dialog"
+    [style]="{ width: '90vw', maxWidth: '1200px' }"
+    [maximizable]="true"
+    [contentStyle]="{'overflow': 'visible', 'max-height': '70vh'}"
+    [modal]="true"
+    [(visible)]="visible"
+    (onHide)="close()">
+
+    <div class="rol-permiso-container">
+
+        <!-- Barra de búsqueda -->
+        <div class="search-bar sticky-search">
+            <span class="p-input-icon-left p-input-icon-right">
+                <i class="pi pi-search"></i>
+                <input
+                    type="text"
+                    pInputText
+                    [(ngModel)]="searchText"
+                    (ngModelChange)="onSearchChange()"
+                    placeholder="Buscar permisos por nombre o descripción..."
+                    class="search-input" />
+                <i
+                    *ngIf="searchText"
+                    class="pi pi-times search-clear-icon"
+                    (click)="clearSearch()"
+                    pTooltip="Limpiar búsqueda">
+                </i>
+            </span>
+        </div>
+
+        <!-- Contador de permisos seleccionados -->
+        <div class="selection-info">
+            <div class="selection-count-wrapper">
+                <i class="pi pi-check-circle"></i>
+                <span class="selection-count">
+                    <strong>{{ permisosAsociados.length }}</strong> permiso(s) seleccionado(s)
+                </span>
+            </div>
+        </div>
+
+        <!-- Lista de permisos agrupados -->
+        <div class="permisos-container">
+            <p-accordion
+                [multiple]="true"
+                [(activeIndex)]="activeIndex"
+                class="permisos-accordion">
+
+                <p-accordionTab *ngFor="let grupo of gruposFiltrados; let grupoIndex = index">
+                    <ng-template pTemplate="header">
+                        <div class="accordion-header">
+                            <p-checkbox
+                                [binary]="true"
+                                [ngModel]="grupo.checked"
+                                [indeterminate]="grupo.indeterminate"
+                                (onChange)="toggleGrupo(grupo)"
+                                (click)="$event.stopPropagation()"
+                                [disabled]="!grupo.permisos?.length && !grupo.children?.length">
+                            </p-checkbox>
+                            <span class="grupo-label">
+                                <i class="pi pi-folder grupo-icon"></i>
+                                {{ grupo.label }}
+                            </span>
+                            <span class="grupo-count">
+                                {{ countPermisosSeleccionadosEnGrupo(grupo) }}/{{ countPermisosEnGrupo(grupo) }}
+                            </span>
+                        </div>
+                    </ng-template>
+
+                    <div class="grupo-content">
+                        <!-- Permisos de acceso al menú (modulo:ver) -->
+                        <ng-container *ngIf="grupo.permisos && grupo.permisos.length > 0">
+                            <div *ngIf="hasMenuAccessPermisos(grupo.permisos)" class="menu-access-section">
+                                <div class="menu-access-header">
+                                    <i class="pi pi-bars menu-access-icon"></i>
+                                    <span class="menu-access-title">Acceso al módulo</span>
+                                </div>
+                                <div class="permisos-list menu-permisos">
+                                    <ng-container *ngFor="let permiso of grupo.permisos">
+                                        <div
+                                            *ngIf="isMenuAccessPermiso(permiso)"
+                                            class="permiso-item menu-permiso-item"
+                                            [pTooltip]="getPermisoTooltip(permiso)"
+                                            tooltipPosition="right"
+                                            [showDelay]="300">
+                                            <p-checkbox
+                                                [binary]="true"
+                                                [ngModel]="isPermisoSelected(permiso)"
+                                                (onChange)="togglePermiso(permiso, grupo)"
+                                                [inputId]="'permiso-' + permiso.idPermiso">
+                                            </p-checkbox>
+                                            <label
+                                                [for]="'permiso-' + permiso.idPermiso"
+                                                class="permiso-label">
+                                                <span class="permiso-text">{{ getPermisoLabel(permiso) }}</span>
+                                                <span class="permiso-badge badge-menu">
+                                                    ACCESO
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <!-- Permisos funcionales directos del grupo principal -->
+                        <div *ngIf="hasFuncionalPermisos(grupo.permisos)" class="permisos-list direct-permisos">
+                            <ng-container *ngFor="let permiso of grupo.permisos">
+                                <div
+                                    *ngIf="!isMenuAccessPermiso(permiso)"
+                                    class="permiso-item"
+                                    [pTooltip]="getPermisoTooltip(permiso)"
+                                    tooltipPosition="right"
+                                    [showDelay]="300">
+                                    <p-checkbox
+                                        [binary]="true"
+                                        [ngModel]="isPermisoSelected(permiso)"
+                                        (onChange)="togglePermiso(permiso, grupo)"
+                                        [inputId]="'permiso-' + permiso.idPermiso">
+                                    </p-checkbox>
+                                    <label
+                                        [for]="'permiso-' + permiso.idPermiso"
+                                        class="permiso-label">
+                                        <span class="permiso-text">{{ getPermisoLabel(permiso) }}</span>
+                                        <span
+                                            *ngIf="getPermisoBadgeType(permiso)"
+                                            class="permiso-badge"
+                                            [ngClass]="'badge-' + getPermisoBadgeType(permiso)">
+                                            {{ getBadgeText(getPermisoBadgeType(permiso)) }}
+                                        </span>
+                                    </label>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <!-- Subgrupos -->
+                        <div *ngIf="grupo.children && grupo.children.length > 0" class="subgrupos-container">
+                            <div *ngFor="let subgrupo of grupo.children" class="subgrupo">
+                                <div class="subgrupo-header">
+                                    <p-checkbox
+                                        [binary]="true"
+                                        [ngModel]="subgrupo.checked"
+                                        [indeterminate]="subgrupo.indeterminate"
+                                        (onChange)="toggleSubgrupo(subgrupo, grupo)"
+                                        [inputId]="'subgrupo-' + subgrupo.key">
+                                    </p-checkbox>
+                                    <label
+                                        [for]="'subgrupo-' + subgrupo.key"
+                                        class="subgrupo-label">
+                                        <i class="pi pi-folder-open subgrupo-icon"></i>
+                                        {{ subgrupo.label }}
+                                    </label>
+                                    <span class="subgrupo-count">
+                                        {{ countPermisosSeleccionadosEnGrupo(subgrupo) }}/{{ countPermisosEnGrupo(subgrupo) }}
+                                    </span>
+                                </div>
+
+                                <div class="subgrupo-permisos">
+                                    <!-- Permisos de menú en subgrupo -->
+                                    <ng-container *ngIf="hasMenuAccessPermisos(subgrupo.permisos)">
+                                        <div class="menu-access-section subgrupo-menu-section">
+                                            <div class="menu-access-header">
+                                                <i class="pi pi-bars menu-access-icon"></i>
+                                                <span class="menu-access-title">Acceso al módulo</span>
+                                            </div>
+                                            <div class="permisos-list menu-permisos">
+                                                <ng-container *ngFor="let permiso of subgrupo.permisos">
+                                                    <div
+                                                        *ngIf="isMenuAccessPermiso(permiso)"
+                                                        class="permiso-item menu-permiso-item subgrupo-item"
+                                                        [pTooltip]="getPermisoTooltip(permiso)"
+                                                        tooltipPosition="right"
+                                                        [showDelay]="300">
+                                                        <p-checkbox
+                                                            [binary]="true"
+                                                            [ngModel]="isPermisoSelected(permiso)"
+                                                            (onChange)="togglePermiso(permiso, grupo, subgrupo)"
+                                                            [inputId]="'permiso-' + permiso.idPermiso + '-' + subgrupo.key">
+                                                        </p-checkbox>
+                                                        <label
+                                                            [for]="'permiso-' + permiso.idPermiso + '-' + subgrupo.key"
+                                                            class="permiso-label">
+                                                            <span class="permiso-text">{{ getPermisoLabel(permiso) }}</span>
+                                                            <span class="permiso-badge badge-menu">
+                                                                ACCESO
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <!-- Permisos funcionales en subgrupo -->
+                                    <ng-container *ngFor="let permiso of subgrupo.permisos">
+                                        <div
+                                            *ngIf="!isMenuAccessPermiso(permiso)"
+                                            class="permiso-item subgrupo-item"
+                                            [pTooltip]="getPermisoTooltip(permiso)"
+                                            tooltipPosition="right"
+                                            [showDelay]="300">
+                                            <p-checkbox
+                                                [binary]="true"
+                                                [ngModel]="isPermisoSelected(permiso)"
+                                                (onChange)="togglePermiso(permiso, grupo, subgrupo)"
+                                                [inputId]="'permiso-' + permiso.idPermiso + '-' + subgrupo.key">
+                                            </p-checkbox>
+                                            <label
+                                                [for]="'permiso-' + permiso.idPermiso + '-' + subgrupo.key"
+                                                class="permiso-label">
+                                                <span class="permiso-text">{{ getPermisoLabel(permiso) }}</span>
+                                                <span
+                                                    *ngIf="getPermisoBadgeType(permiso)"
+                                                    class="permiso-badge"
+                                                    [ngClass]="'badge-' + getPermisoBadgeType(permiso)">
+                                                    {{ getBadgeText(getPermisoBadgeType(permiso)) }}
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje si no hay permisos -->
+                        <div
+                            *ngIf="(!grupo.permisos || grupo.permisos.length === 0) && (!grupo.children || grupo.children.length === 0)"
+                            class="no-permisos">
+                            No hay permisos disponibles
+                        </div>
+                    </div>
+                </p-accordionTab>
+            </p-accordion>
+
+            <!-- Mensaje si no hay grupos -->
+            <div *ngIf="gruposFiltrados.length === 0" class="no-results">
+                <i class="pi pi-search"></i>
+                <p>No se encontraron permisos que coincidan con la búsqueda</p>
+            </div>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="dialog-footer">
+            <p-button
+                severity="secondary"
+                type="button"
+                [rounded]="true"
+                label="Cancelar"
+                icon="pi pi-times"
+                (click)="close()">
+            </p-button>
+            <p-button
+                severity="primary"
+                type="button"
+                [rounded]="true"
+                label="Guardar"
+                icon="pi pi-check"
+                [disabled]="permisosAsociados.length === 0"
+                (click)="guardar()">
+            </p-button>
+        </div>
+    </ng-template>
+
+    <div class="info-message">
+        <i class="pi pi-info-circle"></i>
+        <strong>Importante:</strong> Los cambios se verán reflejados en el próximo inicio de sesión
+    </div>
+
+</p-dialog>
+

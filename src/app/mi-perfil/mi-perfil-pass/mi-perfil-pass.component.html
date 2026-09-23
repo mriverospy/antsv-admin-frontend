@@ -1,0 +1,121 @@
+<div class="p-grid p-fluid">
+    <div class="lg:w-9 mt-4">
+       <form (ngSubmit)="onSubmit()" #form="ngForm">
+            
+            <!-- Sección de Contraseña Actual -->
+            <div class="grid mb-4">
+                <div class="col-12 md:col-3 flex align-items-center">
+                    <label for="currentPassword" class="block mb-0">Contraseña actual</label>
+                </div>
+                <div class="col-12 md:col-9">
+                    <input 
+                        pInputText 
+                        type="password" 
+                        id="currentPassword" 
+                        name="current_password" 
+                        [(ngModel)]="currentPassword"
+                        class="w-full" 
+                        placeholder="Ingresa tu contraseña actual">
+                </div>
+            </div>
+            <hr>
+            
+            <!-- Sección de Nueva Contraseña -->
+            <div class="grid mb-4">
+                <div class="col-12 md:col-3 flex align-items-center">
+                    <label for="newPassword" class="block mb-0">Nueva contraseña</label>
+                </div>
+                <div class="col-12 md:col-9">
+                    <input 
+                        pInputText 
+                        type="password" 
+                        id="newPassword" 
+                        name="new_password" 
+                        [(ngModel)]="newPassword"
+                        class="w-full" 
+                        placeholder="Ingresa tu nueva contraseña">
+                </div>
+            </div>
+
+            <!-- Sección de Confirmar Nueva Contraseña -->
+            <div class="grid mb-4">
+                <div class="col-12 md:col-3 flex align-items-center">
+                    <label for="confirmPassword" class="block mb-0">Repetir nueva contraseña</label>
+                </div>
+                <div class="col-12 md:col-9">
+                    <input 
+                        pInputText 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirm_password" 
+                        [(ngModel)]="confirmPassword"
+                        class="w-full" 
+                        placeholder="Confirma tu nueva contraseña">
+                </div>
+            </div>
+            <hr>
+            <!-- Sección de Botones de acción -->
+            <div class="flex justify-content-center mt-5">
+                <p-button 
+                    label="Guardar cambios" 
+                    severity="primary" 
+                    styleClass="p-button-rounded"
+                    type="submit">
+                </p-button>
+               <p-button 
+                        label="Cancelar" 
+                        severity="secondary"
+                        styleClass="ml-2"
+                        [rounded]="true">
+                </p-button>
+            </div>
+
+            <!-- Divisor
+            <hr class="mt-6 pt-6">
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3">
+                        <label class="block mb-0 font-semibold">Eliminar mi cuenta</label>
+                        <p class="text-sm mt-0 text-color-secondary">Esta acción no se puede deshacer</p>
+                    </div>
+                    <div class="col-12 md:col-5 flex justify-content-start ml-7">
+                        <p-button 
+                            label="Si, eliminar mi cuenta" 
+                            icon="pi pi-trash" 
+                            severity="danger" 
+                            styleClass="p-button-rounded"
+                            (click)="openConfirmation()">
+                        </p-button>
+                    </div>
+                </div>
+            -->
+            
+        </form>
+    </div>
+</div>
+
+<p-dialog header="Confirmación" [(visible)]="displayConfirmation" [style]="{ width: '400px' }" [modal]="true">
+    <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem; color: var(--red-500)"></i>
+        <span>¿Confirma dar de baja su cuenta de usuario?</span>
+    </div>
+    <ng-template pTemplate="footer">
+        <div class="flex justify-content-end gap-2">
+            <p-button 
+                label="Cancelar" 
+                icon="pi pi-times" 
+                (click)="closeConfirmation()" 
+                severity="secondary" 
+                styleClass="p-button-rounded"
+                [text]="true">
+            </p-button>
+            <p-button 
+                label="Confirmar" 
+                icon="pi pi-check" 
+                (click)="confirmDelete()" 
+                severity="danger" 
+                styleClass="p-button-rounded"
+                autofocus>
+            </p-button>
+        </div>
+    </ng-template>
+</p-dialog>

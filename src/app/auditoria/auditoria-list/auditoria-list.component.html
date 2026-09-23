@@ -1,0 +1,142 @@
+<div class="p-grid" *ngIf="checkPermission('auditoria:ver')">
+    <div class="p-col-12 p-md-12">
+        <div class="card card-datatables">
+
+            <p-toolbar styleClass="p-mb-12">
+                <h3 class="mb-0">Auditoria</h3>
+                <ng-template pTemplate="right">
+                    <ng-container *ngIf="mostrarFiltros">
+                        <button pButton pRipple label="Limpiar Filtros" icon="pi pi-filter-slash"
+                            pTooltip="Limpiar todos los filtros" tooltipPosition="left"
+                            class="p-button-secondary mr-2 ml-2" (click)="clearFilters()"></button>
+                    </ng-container>
+                    
+                    <button pButton pRipple [label]="mostrarFiltros ? 'Ocultar Filtros' : 'Mostrar Filtros'"
+                        [icon]="mostrarFiltros ? 'pi pi-eye-slash' : 'pi pi-sliders-h'" class="p-button-info mr-2"
+                        class="p-button-secondary mr-2 ml-2" (click)="toggleFiltros()"></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-blockUI [target]="table" [blocked]="block">
+                <p-progressSpinner class="spinner-position"></p-progressSpinner>
+            </p-blockUI>
+
+            <form (ngSubmit)="table.filterGlobal('', 'contains')">
+                <p-table #table dataKey="id" styleClass="p-datatable-customers" selectionMode="single"
+                    paginatorPosition="bottom" [columns]="cols" [value]="auditoria" [rows]="pageSize"
+                    [totalRecords]="totalRecords" [loading]="loading" [paginator]="true" [resizableColumns]="true"
+                    [sortOrder]="-1" [autoLayout]="true" [lazy]="true" (onLazyLoad)="load($event)">
+
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th pResizableColumn>
+                                <div class="p-d-flex p-jc-between p-ai-center text-left fs-12">Fecha</div>
+                            </th>
+                            <th pResizableColumn>
+                                <div pSortableColumn="modulo" class="p-d-flex p-jc-between p-ai-center text-left">
+                                    Módulo <p-sortIcon field="modulo"></p-sortIcon>
+                                </div>
+                            </th>
+                            <th pResizableColumn>
+                                <div pSortableColumn="metodo" class="p-d-flex p-jc-between p-ai-center text-left">
+                                    Método <p-sortIcon field="metodo"></p-sortIcon>
+                                </div>
+                            </th>
+                            <th pResizableColumn>
+                                <div pSortableColumn="accion" class="p-d-flex p-jc-between p-ai-center text-left">
+                                    Acción <p-sortIcon field="accion"></p-sortIcon>
+                                </div>
+                            </th>
+                            <th pResizableColumn>
+                                <div pSortableColumn="nombreUsuario"
+                                    class="p-d-flex p-jc-between p-ai-center text-left">
+                                    Usuario <p-sortIcon field="nombreUsuario"></p-sortIcon>
+                                </div>
+                            </th>
+                            <th class="btn-acciones-sm">
+                                <div class="p-d-flex p-jc-between p-ai-center fs-12">Acciones</div>
+                            </th>
+                        </tr>
+                        <tr *ngIf="mostrarFiltros" [formGroup]="searchFormGroup" class="fila-filtros-datatables">
+                            <th></th>
+                            <th>
+                                <input pInputText formControlName="modulo" class="w-100">
+                            </th>
+                            <th>
+                                <input pInputText formControlName="metodo" class="w-100">
+                            </th>
+                            <th>
+                                <input pInputText formControlName="accion" class="w-100">
+                            </th>
+                            <th>
+                                <input pInputText formControlName="nombreUsuario" class="w-100">
+                            </th>
+                            <th></th>
+                            <input type="submit" hidden>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-row>
+                        <tr class="p-selectable-row">
+                            <td>
+                                <span class="p-column-title">Fecha</span>
+                                {{ row?.fechaHora | date : 'dd/MM/yyyy HH:mm' }}
+                            </td>
+                            <td>
+                                <span class="p-column-title">Módulo</span>
+                                {{ row?.modulo }}
+                            </td>
+                            <td>
+                                <span class="p-column-title">Método</span>
+                                {{ row?.metodo }}
+                            </td>
+                            <td>
+                                <span class="p-column-title">Acción</span>
+                                <span pTooltip="{{ row?.tipoEvento }}">{{ row?.accion }}</span>
+                            </td>
+                            <td>
+                                <span class="p-column-title">Username</span>
+                                {{ row?.nombreUsuario }}
+                            </td>
+                            <td class="btn-acciones btn-acciones-sm">
+                                <span class="p-column-title">Detalles</span>
+                                <button pButton type="button" *ngIf="checkPermission('auditoria:ver')"
+                                    icon="pi pi-eye" class="p-button-secondary" pTooltip="Ver detalles"
+                                    (click)="openDetail(row)"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td class="emptymessage" colspan="7">
+                                <img src="assets/images/vacio.png">
+                                <p>No se encontraron datos disponibles</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="paginatorleft">
+                        <h6>Total: {{ totalRecords }}</h6>
+                    </ng-template>
+                </p-table>
+            </form>
+
+
+            <p-dialog header="Detalle de Auditoría" [(visible)]="showDialog" [modal]="true" [closable]="true"
+                (onHide)="showDialog=false">
+                <div *ngIf="entity">
+                    <!--  <p><b>ID:</b> {{ entity.id }}</p> -->
+                    <p><b>Usuario:</b> {{ entity.nombreUsuario }}</p>
+                    <p><b>Módulo:</b> {{ entity.modulo }}</p>
+                    <p><b>Acción:</b> {{ entity.accion }}</p>
+                    <p><b>Fecha:</b> {{ entity.fechaHora | date : 'dd/MM/yyyy HH:mm' }}</p>
+                    <!-- Agrega más campos según tu modelo -->
+                </div>
+            </p-dialog>
+
+            <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+        </div>
+    </div>
+</div>
