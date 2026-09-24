@@ -5,3 +5,6 @@ deploy.sh
 package-lock.json
 htv-admin.tar.gz
 htv-admin
+
+# Generated logs
+*.log

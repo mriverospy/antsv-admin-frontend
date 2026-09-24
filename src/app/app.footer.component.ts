@@ -5,7 +5,7 @@ import {AppComponent} from './app.component';
     selector: 'app-footer',
     template: `
         <div class="layout-footer flex align-items-center p-4">
-            <img id="footer-logo" [src]="'assets/images/Logo/PNG/Logo Negro_Horizontal Negro.png'" alt="Tramites ANTSV" width="160">
+            <img id="footer-logo" [src]="'assets/images/Logo/PNG/tramites-antsv.png'" alt="Trámites ANTSV" width="160" style="height: auto;">
             <button pButton pRipple type="button" icon="pi pi-instagram fs-large" class="p-button-rounded p-button-text p-button-plain" [ngClass]="{'ml-auto mr-2': !app.isRTL, 'ml-2 mr-auto': app.isRTL}"></button>
             <button pButton pRipple type="button" icon="pi pi-facebook fs-large" class="p-button-rounded p-button-text p-button-plain" [ngClass]="{'mr-2': !app.isRTL, 'ml-2': app.isRTL}"></button>
             <button pButton pRipple type="button" icon="pi pi-linkedin fs-large" class="p-button-rounded p-button-text p-button-plain" [ngClass]="{'mr-2': !app.isRTL, 'ml-2': app.isRTL}"></button>
