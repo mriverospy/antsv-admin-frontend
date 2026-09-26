@@ -77,7 +77,12 @@ export class AppMenuComponent implements OnInit {
       { label: 'Tipos de Documento', icon: 'pi pi-fw pi-file-edit', routerLink: ['/tipo-documento'], visible: this.permissionService.hasPermission('tipoDocumento:ver') },
       { label: 'Auditoría', icon: 'pi pi-fw pi-flag', routerLink: ['/auditoria'], visible: this.permissionService.hasPermission('auditoria:ver') },
       { label: 'Notificaciones', icon: 'pi pi-fw pi-bell', routerLink: ['/notificaciones'] },
-    ] }];
+    ] },
+    { label: 'Trámites', items: [
+      { label: 'Iniciar Trámite', icon: 'pi pi-fw pi-file-edit', routerLink: ['/tramite'], visible: !this.permissionService.hasPermission('tramites:ver') },
+      { label: 'Bandeja de entrada', icon: 'pi pi-fw pi-inbox', routerLink: ['/bandeja'], visible: !this.permissionService.hasPermission('bandejas:ver') },
+      { label: 'Historial de Trámites', icon: 'pi pi-fw pi-history', routerLink: ['/historial'], visible: !this.permissionService.hasPermission('historial:ver') },
+      ] }];
 
     // Inicializar la lista completa de elementos del menú para búsqueda
     this.initializeSearchableItems();
